@@ -4,158 +4,366 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#231e23">
-<title>海月Sama · 视频目录</title>
+<meta name="theme-color" content="#071329">
+<meta name="description" content="海月 SeaMoon 的视频作品目录，可按作品编号或标题查找。">
+<link rel="icon" type="image/webp" href="seamoon-mark.webp">
+<title>SeaMoon 海月 · 视频目录</title>
 <style>
-  :root {
-    color-scheme: light;
-    --ink: #2a2428;
-    --muted: #655c62;
-    --paper: #f7f3ef;
-    --card: #fffdfb;
-    --line: #ded5d4;
-    --wine: #882847;
-    --wine-soft: #f5e7ec;
-    --night: #231e23;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-    -webkit-text-size-adjust: 100%;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; color: var(--ink); background: var(--paper); line-height: 1.5; }
-  [hidden] { display: none !important; }
-  a { color: inherit; }
-  a:focus-visible, input:focus-visible { outline: 3px solid #b54065; outline-offset: 3px; }
-  .wrap { width: min(calc(100% - 48px), 1080px); margin-inline: auto; }
-  .hero { color: #fff7ef; background: var(--night); border-bottom: 3px solid #aa5270; }
-  .hero .wrap { padding-block: 42px 38px; }
-  .brand { margin: 0 0 9px; color: #edc0cd; font-size: .95rem; font-weight: 650; }
-  h1, h2, h3, figure, p { margin: 0; }
-  h1 { font: 700 clamp(2.6rem, 7vw, 4rem)/1.15 "Songti SC", "Noto Serif CJK SC", ui-serif, Georgia, serif; letter-spacing: .03em; }
-  .totals { margin-top: 16px; color: #e4d8de; font-size: .95rem; }
-  .controls { padding-block: 23px 10px; }
-  .search { display: flex; align-items: center; gap: 10px; min-height: 48px; padding-inline: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
-  .search span { font-size: .9rem; color: var(--muted); }
-  .search input { flex: 1; width: 0; min-height: 46px; padding: 0; border: 0; background: transparent; font: inherit; color: inherit; }
-  .search input:focus { outline: none; }
-  .search:focus-within { outline: 2px solid var(--wine); outline-offset: 2px; }
-  .filters { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
-  .filters a { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 6px 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); font-size: .875rem; text-decoration: none; }
-  .filters a[aria-current] { border-color: var(--wine); background: var(--wine); color: white; }
-  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-  .section-head h2 { font-size: clamp(1.3rem, 4.4vw, 1.7rem); font-weight: 760; }
-  .section-head small, .section-head > span { color: var(--muted); font-size: .875rem; font-weight: 500; }
-  .section-head small { margin-inline-start: .25rem; }
-  .section-head > span { white-space: nowrap; }
-  .featured, .category-group { margin-block: 22px 38px; scroll-margin-top: 16px; }
-  .featured-grid, .card-grid { display: grid; align-items: start; gap: 14px; }
-  .featured-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .card { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow-wrap: anywhere; scroll-margin-top: 16px; }
-  .card:target { outline: 2px solid var(--wine); outline-offset: 3px; }
-  .card-grid .bundle { grid-column: span 2; }
-  .cover-set { display: grid; grid-template-columns: repeat(var(--covers), minmax(0, 1fr)); align-items: start; gap: 1px; background: var(--line); }
-  .cover-set figure { min-width: 0; background: #ede7e4; }
-  .cover-set img { display: block; width: 100%; height: clamp(170px, 29vw, 285px); object-fit: contain; }
-  .featured-grid img { height: clamp(240px, 34vw, 350px); }
-  figcaption { padding: 6px; color: var(--muted); text-align: center; background: var(--card); font-size: .8125rem; }
-  .card-copy { padding: 13px 14px 15px; }
-  .labels { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 5px; }
-  .id { color: var(--wine); font-size: .875rem; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .025em; }
-  .category, .tag { padding: 1px 6px; border-radius: 4px; color: var(--wine); background: var(--wine-soft); font-size: .8125rem; }
-  h3 { font-size: 1.02rem; line-height: 1.42; }
-  .featured h3 { font-size: 1.2rem; }
-  h3 a { text-decoration-thickness: 1px; text-underline-offset: 3px; }
-  .note { margin-top: 7px; font-size: .875rem; }
-  .note.en { color: var(--muted); }
-  .note.price { color: var(--wine); font-weight: 680; }
-  #results { margin-block: 10px; color: var(--muted); }
-  .foot { padding-block: 12px 36px; border-top: 1px solid var(--line); color: var(--muted); font-size: .875rem; }
-  @media (max-width: 690px) {
-    .wrap { width: calc(100% - 32px); }
-    .hero .wrap { padding-block: 28px 25px; }
-    .controls { padding-block: 16px 0; }
-    .filters { gap: 5px; }
-    .filters a { padding-inline: 9px; }
-    .section-head { margin-bottom: 10px; }
-    .featured-grid { grid-template-columns: minmax(0, 1fr); }
-    .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .card-grid, .featured-grid { gap: 10px; }
-    .featured-grid img { height: clamp(210px, 66vw, 330px); }
-    .card-copy { padding: 10px 11px 12px; }
-  }
-  @media (max-width: 340px) {
-    .card-grid { grid-template-columns: minmax(0, 1fr); }
-    .card-grid .bundle { grid-column: auto; }
-  }
+:root {
+  color-scheme: light;
+  --night: #071329;
+  --ink: #10212c;
+  --muted: #4e626d;
+  --teal: #006c74;
+  --aqua: #83f3e6;
+  --paper: #f4f8f8;
+  --line: #cdd9dc;
+  --sans: Inter, "Helvetica Neue", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font: 100%/1.5 var(--sans);
+  -webkit-text-size-adjust: 100%;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--paper); }
+[hidden] { display: none !important; }
+a { color: inherit; }
+a, button, input, summary { -webkit-tap-highlight-color: rgba(61,208,195,.18); }
+button, input { color: inherit; font: inherit; }
+button, summary { cursor: pointer; }
+:focus-visible { outline: 3px solid #098486; outline-offset: 4px; }
+.masthead :focus-visible, dialog :focus-visible { outline-color: var(--aqua); }
+h1, h2, h3, p { margin: 0; }
+.wrap { width: min(calc(100% - 8vw), 1152px); margin-inline: auto; }
+.masthead {
+  isolation: isolate; position: relative; overflow: hidden; color: #f5fafc;
+  background: radial-gradient(ellipse at 75% 80%, #103b4b 0, transparent 50%),
+              linear-gradient(112deg, #081224 7%, #0a1b35 61%, #08122b 100%);
+}
+.masthead::after {
+  content: ""; position: absolute; inset: auto 0 0; height: 2px;
+  background: linear-gradient(90deg, transparent 2%, #638793 38%, #91fff1 70%, #475c78 93%);
+}
+.topbar { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; min-height: 67px; border-bottom: 1px solid #ffffff2b; }
+.home, .jump { display: inline-flex; align-items: center; text-decoration: none; }
+.home { gap: 10px; font-size: 1.05rem; font-weight: 700; letter-spacing: -.025em; }
+.home img { width: 34px; height: 34px; border-radius: 10px; box-shadow: 0 0 0 1px #ffffff35; }
+.jump { min-height: 44px; gap: 9px; font-size: .88rem; color: #e2eef2; }
+.grid-icon { width: 13px; height: 13px; display: inline-grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.grid-icon i { border: 1px solid currentColor; border-radius: 1px; }
+.hero { position: relative; min-height: 328px; display: flex; align-items: center; isolation: isolate; }
+.hero-copy { position: relative; z-index: 1; padding-block: 36px 42px; pointer-events: none; }
+.hero-copy a { pointer-events: auto; }
+.eyebrow { display: flex; align-items: center; gap: 10px; color: #b2e9e9; font: 600 .76rem/1.4 var(--mono); letter-spacing: .17em; }
+.eyebrow::before { content: ""; width: 30px; height: 2px; background: var(--aqua); }
+.wordmark { display: block; width: max-content; margin: .04em 0 .09em -.035em; color: #f5fcff; font: 750 clamp(5rem, 9.8vw, 8.4rem)/1.04 var(--sans); letter-spacing: -.084em; }
+.wordmark em { margin-right: .025em; font: italic 500 1.02em/1 Baskervville, Baskerville, Georgia, "Times New Roman", serif; letter-spacing: -.093em; }
+.hero-title { display: block; font-size: clamp(1.45rem, 2.55vw, 2.15rem); font-weight: 620; line-height: 1.32; letter-spacing: .09em; }
+.latest-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 21px; font-size: .84rem; }
+.latest-links span { margin-right: 6px; color: #afc6ce; }
+.latest-links a { display: inline-flex; align-items: center; min-height: 34px; padding: 3px 11px; border: 1px solid #6a8999; border-radius: 30px; font: 600 .84rem/1 var(--mono); letter-spacing: .04em; text-decoration: none; color: #f1ffff; }
+.latest-links a:hover { border-color: var(--aqua); color: var(--aqua); }
+.hero-art { position: absolute; z-index: -1; inset: 0 -3% 0 auto; width: 54%; pointer-events: none; }
+.hero-art::before {
+  content: ""; position: absolute; inset: -5% -14% -10%; opacity: .55;
+  background-image: linear-gradient(#91d7e41a 1px, transparent 1px), linear-gradient(90deg, #91d7e41a 1px, transparent 1px);
+  background-size: 33px 33px;
+  -webkit-mask-image: radial-gradient(ellipse, #000 13%, transparent 73%); mask-image: radial-gradient(ellipse, #000 13%, transparent 73%);
+}
+.orbit { position: absolute; top: 50%; left: 50%; width: 105%; height: 48%; border: 1px solid #85d3e65c; border-radius: 50%; transform: translate(-50%, -50%) rotate(-22deg); }
+.orbit.secondary { width: 89%; height: 72%; border-color: #85bed440; transform: translate(-50%, -50%) rotate(24deg); }
+.orbit::after { content: ""; position: absolute; left: 16%; top: 12%; width: 4px; height: 4px; border-radius: 50%; background: #b8fbfb; box-shadow: 0 0 10px #c3f6ff; }
+.orbit.secondary::after { left: 92%; top: 22%; width: 3px; height: 3px; }
+.hero-logo {
+  position: absolute; left: 50%; top: 50%; width: min(83%, 365px); transform: translate(-50%, -50%); mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(closest-side, #000 77%, transparent 100%); mask-image: radial-gradient(closest-side, #000 77%, transparent 100%);
+}
+.collection { padding-block: clamp(29px, 4vw, 52px) 38px; scroll-margin-top: 14px; }
+.collection-head, .group-head { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+.collection-head { margin-bottom: 21px; }
+.heading { display: flex; align-items: baseline; gap: 14px; }
+.heading h2 { font-size: clamp(1.6rem, 3.2vw, 2.45rem); line-height: 1.18; font-weight: 780; letter-spacing: -.045em; }
+.count { color: var(--muted); font: .82rem/1.5 var(--mono); white-space: nowrap; }
+.search-toggle { display: inline-flex; align-items: center; gap: 9px; min-height: 42px; padding: 0 16px; border: 1px solid #b5c8cc; border-radius: 24px; background: transparent; font-size: .88rem; }
+.search-toggle:hover, .search-toggle[aria-expanded="true"] { background: #e4eff0; border-color: #74979e; }
+.magnifier { position: relative; width: 13px; height: 13px; border: 1.6px solid currentColor; border-radius: 50%; margin: 0 2px 2px 0; }
+.magnifier::after { content: ""; position: absolute; right: -4px; bottom: -2px; width: 6px; height: 1.6px; background: currentColor; transform: rotate(45deg); }
+.search-panel { margin: 0 0 20px; padding: 14px 16px; background: #e8f0f1; border-radius: 10px; }
+.search-field { display: flex; gap: 12px; align-items: center; }
+.search-field input { flex: 1; min-width: 0; height: 44px; border: 1px solid #9fb6bb; border-radius: 6px; background: #fff; padding-inline: 12px; }
+.filters { display: flex; flex-wrap: wrap; gap: 5px 10px; padding-top: 9px; }
+.filters a { display: inline-flex; align-items: center; min-height: 40px; padding: 3px 12px; text-decoration: none; border-radius: 24px; font-size: .9rem; }
+.filters a[aria-current] { background: var(--night); color: white; }
+#results { color: var(--muted); margin-block: 7px; }
+.category-group { scroll-margin-top: 16px; }
+.group-head { margin: 26px 0 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.group-head h2 { font-size: 1.3rem; }
+.group-head small, .group-head > span { margin-left: 4px; color: var(--muted); font-size: .85rem; font-weight: 500; }
+.card-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 30px 22px; align-items: start; }
+#latest .card-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 26px; }
+.card { min-width: 0; scroll-margin-top: 16px; overflow-wrap: anywhere; }
+.picture { isolation: isolate; position: relative; border-radius: 10px; background: #172831; }
+.poster { display: block; position: relative; border-radius: inherit; overflow: hidden; aspect-ratio: 1.65; color: white; cursor: zoom-in; }
+.poster img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% var(--focus, 79%); transition: transform .35s ease; }
+.poster::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 1px #11252e1a; border-radius: inherit; background: linear-gradient(0deg, #07132956, transparent 22%, transparent 82%, #07132925); }
+@media (hover: hover) { .poster:hover img { transform: scale(1.025); } }
+.catalog-id, .recommended { position: absolute; z-index: 1; top: 12px; pointer-events: none; }
+.catalog-id { left: 12px; padding: 5px 9px 4px; border: 1px solid #ffffff5c; border-radius: 4px; background: #09172bed; color: white; font: 650 .88rem/1.2 var(--mono); letter-spacing: .085em; }
+.recommended { right: 12px; padding: 4px 8px; background: var(--aqua); border-radius: 4px; font-size: .8rem; font-weight: bold; }
+.enlarge { position: absolute; z-index: 1; right: 12px; bottom: 12px; display: grid; place-content: center; width: 34px; height: 34px; border: 1px solid #ffffff85; border-radius: 50%; background: #0a1725cd; }
+.enlarge::before, .enlarge::after { content: ""; position: absolute; width: 6px; height: 6px; }
+.enlarge::before { top: 9px; right: 9px; border-right: 1.5px solid; border-top: 1.5px solid; }
+.enlarge::after { bottom: 9px; left: 9px; border-left: 1.5px solid; border-bottom: 1.5px solid; }
+.angles { position: absolute; isolation: isolate; left: 9px; bottom: 6px; right: 52px; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; pointer-events: none; }
+.angle { position: relative; display: inline-flex; align-items: center; min-height: 42px; padding-inline: 8px; color: white; text-decoration: none; font-size: .83rem; font-weight: 650; pointer-events: auto; }
+.angle::before { content: ""; position: absolute; z-index: -1; inset: 6px 0; background: #09172bdc; border: 1px solid #ffffff60; border-radius: 4px; }
+.card-copy { padding: 14px 1px 15px; border-bottom: 1px solid var(--line); }
+.card-category { display: flex; align-items: center; gap: 10px; color: var(--teal); font: 650 .82rem/1.5 var(--sans); letter-spacing: .035em; }
+.card-category span + span { border-left: 1px solid #95aeb2; padding-left: 10px; font-family: var(--mono); }
+.card h3 { margin-top: 3px; font-size: clamp(1.13rem, 2vw, 1.48rem); line-height: 1.4; font-weight: 740; letter-spacing: -.03em; }
+.card h3 a { text-decoration: none; }
+.card h3 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.description { margin-top: 5px; font-size: 1rem; line-height: 1.55; color: var(--muted); }
+.facts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 11px; margin-top: 10px; font-size: .93rem; font-weight: 680; }
+.facts span + span { border-left: 1px solid #9fb4b8; padding-left: 11px; color: var(--teal); }
+.translation { margin-top: 8px; font-size: .85rem; color: var(--muted); }
+.translation summary { width: fit-content; min-height: 32px; display: flex; align-items: center; gap: 6px; font: .8rem/1.5 var(--mono); }
+.translation summary::-webkit-details-marker { display: none; }
+.translation summary::before { content: "+"; font-size: 1rem; }
+.translation[open] summary::before { content: "−"; }
+.translation p { margin: 3px 0; }
+.foot { display: flex; align-items: center; justify-content: space-between; color: var(--muted); border-top: 1px solid var(--line); font-size: .85rem; padding-block: 16px 27px; }
+.foot-wordmark { font: italic 600 1.15rem/1.2 Baskerville, Georgia, serif; }
+.foot a { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: 4px; }
+.viewer { width: min(94vw, 780px); max-width: 96vw; max-height: 95vh; max-height: 95dvh; padding: 14px; border: 1px solid #71969f; border-radius: 12px; background: #091526; color: #f1f9fc; }
+.viewer:not([open]) { display: none; }
+.viewer::backdrop { background: #020913df; }
+body.viewing { overflow: hidden; }
+.viewer header, .viewer nav { display: flex; align-items: center; gap: 8px; }
+.viewer header { justify-content: space-between; margin-bottom: 9px; }
+.viewer h2 { font-size: 1rem; line-height: 1.4; }
+.viewer button { flex: none; min-height: 42px; padding: 5px 12px; border: 1px solid #617780; border-radius: 6px; color: #f6ffff; background: transparent; font-size: .9rem; }
+.viewer button[aria-pressed="true"] { color: var(--night); background: var(--aqua); border-color: var(--aqua); }
+.viewer img { display: block; width: 100%; height: min(65vh, 75vw, 600px); object-fit: contain; background: #030a12; border-radius: 4px; }
+.viewer nav { margin-top: 9px; flex-wrap: wrap; }
+@media (max-width: 800px) {
+  .card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .hero { min-height: 285px; }
+  .hero-art { width: 50%; right: -2%; }
+}
+@media (max-width: 600px) {
+  .wrap { width: calc(100% - 36px); }
+  .topbar { min-height: 55px; }
+  .home img { width: 29px; height: 29px; border-radius: 8px; }
+  .hero { min-height: 245px; }
+  .hero-copy { padding-block: 30px 26px; }
+  .hero-art { inset: 5px -8% auto auto; width: 58%; height: 86%; }
+  .hero-logo { width: 105%; }
+  .orbit { width: 128%; height: 37%; }
+  .orbit.secondary { width: 103%; height: 75%; }
+  .wordmark { font-size: clamp(2.95rem, 13.7vw, 5.15rem); margin-block: .15em .14em; }
+  .hero-title { font-size: 1.35rem; letter-spacing: .08em; }
+  .latest-links { margin-top: 16px; }
+  .eyebrow { font-size: .75rem; letter-spacing: .12em; gap: 7px; }
+  .eyebrow::before { width: 19px; }
+  .collection-head { margin-bottom: 15px; }
+  .heading { gap: 8px; }
+  .heading h2 { font-size: 1.45rem; }
+  .count { font-size: .76rem; }
+  .search-toggle { gap: 6px; padding: 0 11px; }
+  #latest .card-grid, .card-grid { grid-template-columns: minmax(0,1fr); gap: 23px; }
+  .poster { aspect-ratio: 1.38; }
+  .card-copy { padding: 12px 1px; }
+  .card h3 { font-size: 1.27rem; }
+  .viewer img { height: 58vh; height: 58dvh; }
+}
+@media (max-width: 355px) {
+  .wrap { width: calc(100% - 28px); }
+  .hero-art { right: -10%; }
+  .heading { flex-wrap: wrap; gap: 1px 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .poster img { transition: none; } }
 </style>
 </head>
 <body>
-<header class="hero" id="top"><div class="wrap">
-  <p class="brand">海月Sama</p>
-  <h1>视频目录</h1>
-  <p class="totals">3 个视频 · 2 个编号 · 1 个分类 · 连通性预览</p>
-</div></header>
-<main class="wrap">
-  <div class="controls">
-    <label class="search" id="search-label" hidden><span>搜索</span><input type="search" id="search" placeholder="编号或标题，例如 F060" autocomplete="off"></label>
-    <nav class="filters" aria-label="视频分类"><a href="#top" data-filter="all" aria-current="true">全部</a><a href="#food" data-filter="food">食物</a></nav>
-    <p id="results" role="status" hidden></p>
+<header class="masthead" id="top">
+  <div class="wrap topbar">
+    <a class="home" href="#top"><img src="seamoon-mark.webp" alt="" width="34" height="34">海月Sama</a>
+    <a class="jump" href="#catalog"><span class="grid-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>作品目录</a>
   </div>
-  <section class="featured" aria-labelledby="latest-title">
-    <div class="section-head"><h2 id="latest-title">目前最新视频</h2></div>
-    <div class="featured-grid"><article class="card bundle" data-category="food"><div class="cover-set" style="--covers:2"><figure><img src="f060-1-91c6fec2.webp" width="540" height="720" loading="eager" decoding="async" alt="F060 封面 1"><figcaption>A 横屏 / Landscape</figcaption></figure><figure><img src="f060-2-d238fc88.webp" width="540" height="675" loading="eager" decoding="async" alt="F060 封面 2"><figcaption>B 竖屏 / Portrait</figcaption></figure></div><div class="card-copy"><div class="labels"><span class="id">F060</span><span class="tag">A + B</span><span class="category">食物</span></div><h3><a href="#F060">帆布鞋和靴子踩两只烤鸡</a></h3><p class="note en">Canvas Shoes and Boots Crushing Two Roast Chickens</p><p class="note">双视角 A 横屏 + B 竖屏</p><p class="note price">A+B合计13分钟 · 整套99金币<br>A+B total: 13 min · Complete set: 99 coins</p></div></article><article class="card" data-category="food"><div class="cover-set" style="--covers:1"><figure><img src="f059-1-96961435.webp" width="540" height="675" loading="eager" decoding="async" alt="F059 封面 1"></figure></div><div class="card-copy"><div class="labels"><span class="id">F059</span><span class="category">食物</span></div><h3><a href="#F059">双视角运动鞋海月姐姐走秀踩水果</a></h3><p class="note">开头穿长袜，踩到一半换成船袜，包含换袜过程。</p><p class="note en">Haiyue Walking and Crushing Fruit in Sneakers - Two Camera Angles<br>Starts in long socks and switches to no-show socks midway through. The sock-changing process is included.</p><p class="note price">完整版13分钟 · 99金币<br>Full version: 13 min · 99 coins</p></div></article></div>
-  </section>
-  <div id="catalog"><section class="category-group" id="food"><div class="section-head"><h2>食物 <small lang="en">Food</small></h2><span>2 个编号</span></div><div class="card-grid"><article class="card bundle" id="F060" data-category="food"><div class="cover-set" style="--covers:2"><figure><img src="f060-1-91c6fec2.webp" width="540" height="720" loading="lazy" decoding="async" alt="F060 封面 1"><figcaption>A 横屏 / Landscape</figcaption></figure><figure><img src="f060-2-d238fc88.webp" width="540" height="675" loading="lazy" decoding="async" alt="F060 封面 2"><figcaption>B 竖屏 / Portrait</figcaption></figure></div><div class="card-copy"><div class="labels"><span class="id">F060</span><span class="tag">A + B</span></div><h3>帆布鞋和靴子踩两只烤鸡</h3><p class="note en">Canvas Shoes and Boots Crushing Two Roast Chickens</p><p class="note">双视角 A 横屏 + B 竖屏</p><p class="note price">A+B合计13分钟 · 整套99金币<br>A+B total: 13 min · Complete set: 99 coins</p></div></article><article class="card" id="F059" data-category="food"><div class="cover-set" style="--covers:1"><figure><img src="f059-1-96961435.webp" width="540" height="675" loading="lazy" decoding="async" alt="F059 封面 1"></figure></div><div class="card-copy"><div class="labels"><span class="id">F059</span></div><h3>双视角运动鞋海月姐姐走秀踩水果</h3><p class="note">开头穿长袜，踩到一半换成船袜，包含换袜过程。</p><p class="note en">Haiyue Walking and Crushing Fruit in Sneakers - Two Camera Angles<br>Starts in long socks and switches to no-show socks midway through. The sock-changing process is included.</p><p class="note price">完整版13分钟 · 99金币<br>Full version: 13 min · 99 coins</p></div></article></div></section></div>
+  <div class="wrap hero">
+    <div class="hero-copy">
+      <p class="eyebrow" lang="en">VIDEO CATALOGUE</p>
+      <h1><span class="wordmark" lang="en"><em>Sea</em>Moon</span><span class="hero-title">海月视频目录</span></h1>
+      <nav class="latest-links" aria-label="本期更新"><span>本期更新</span><a href="#F060">F060</a><a href="#F059">F059</a></nav>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <i class="orbit"></i><i class="orbit secondary"></i>
+      <img class="hero-logo" src="seamoon-mark.webp" alt="" width="840" height="840" style="height:auto">
+    </div>
+  </div>
+</header>
+<main class="wrap collection" id="catalog">
+  <div class="collection-head">
+    <div class="heading"><h2 id="latest-title">作品目录</h2><span class="count" id="count" aria-live="polite">2 个编号</span></div>
+    <button class="search-toggle" id="search-toggle" aria-expanded="false" aria-controls="search-panel" hidden><span class="magnifier" aria-hidden="true"></span>搜索</button>
+  </div>
+  <div class="search-panel" id="search-panel" hidden>
+    <label class="search-field"><span>查找作品</span><input id="search" type="search" placeholder="输入编号或标题" autocomplete="off"></label>
+    <nav class="filters" aria-label="按分类浏览"><a href="#catalog" data-filter="all" aria-current="true">全部</a><a href="#food" data-filter="food">食物</a></nav>
+  </div>
+  <p id="results" role="status" hidden></p>
+  <section id="latest" aria-labelledby="latest-title" hidden><div class="card-grid"></div></section>
+  <section class="category-group" id="food" aria-label="食物"><div class="group-head"><h2>食物 <small lang="en">Food</small></h2><span>2 个编号</span></div><div class="card-grid"><article class="card" id="F060" data-category="food" data-latest="1"><div class="picture" style="--focus:98%"><a class="poster" href="f060-2-d238fc88.webp" aria-label="放大查看帆布鞋和靴子踩两只烤鸡的封面"><img src="f060-2-d238fc88.webp" width="540" height="675" loading="eager" decoding="async" alt="帆布鞋和靴子踩两只烤鸡"><span class="enlarge" aria-hidden="true"></span></a><span class="catalog-id">F060</span><div class="angles" aria-label="各视角封面"><a class="angle" href="f060-1-91c6fec2.webp" data-label="A 横屏">A 横屏</a><a class="angle" href="f060-2-d238fc88.webp" data-label="B 竖屏">B 竖屏</a></div></div><div class="card-copy"><div class="card-category"><span>食物</span><span>A + B</span></div><h3><a href="#F060">帆布鞋和靴子踩两只烤鸡</a></h3><p class="description">双视角 A 横屏 + B 竖屏</p><p class="facts"><span>A+B合计13分钟</span><span>整套99金币</span></p><details class="translation"><summary lang="en">English</summary><div lang="en"><p>Canvas Shoes and Boots Crushing Two Roast Chickens</p><p>A+B total: 13 min · Complete set: 99 coins</p></div></details></div></article><article class="card" id="F059" data-category="food" data-latest="2"><div class="picture" style="--focus:68%"><a class="poster" href="f059-1-96961435.webp" aria-label="放大查看双视角运动鞋海月姐姐走秀踩水果的封面"><img src="f059-1-96961435.webp" width="540" height="675" loading="eager" decoding="async" alt="双视角运动鞋海月姐姐走秀踩水果"><span class="enlarge" aria-hidden="true"></span></a><span class="catalog-id">F059</span></div><div class="card-copy"><div class="card-category"><span>食物</span></div><h3><a href="#F059">双视角运动鞋海月姐姐走秀踩水果</a></h3><p class="description">开头穿长袜，踩到一半换成船袜，包含换袜过程。</p><p class="facts"><span>完整版13分钟</span><span>99金币</span></p><details class="translation"><summary lang="en">English</summary><div lang="en"><p>Haiyue Walking and Crushing Fruit in Sneakers - Two Camera Angles</p><p>Starts in long socks and switches to no-show socks midway through. The sock-changing process is included.</p><p>Full version: 13 min · 99 coins</p></div></details></div></article></div></section>
 </main>
-<footer class="wrap foot"><a href="#top">返回顶部</a></footer>
+<footer class="wrap foot"><span class="foot-wordmark" lang="en">SeaMoon</span><a href="#top">回到顶部</a></footer>
+<dialog class="viewer" aria-labelledby="viewer-title">
+  <header><h2 id="viewer-title"></h2><button type="button" class="close-viewer" autofocus>关闭</button></header>
+  <img alt=""><nav aria-label="切换视角" hidden></nav>
+</dialog>
 <script>
-  const search = document.querySelector('#search');
-  const results = document.querySelector('#results');
-  const featured = document.querySelector('.featured');
-  const groups = [...document.querySelectorAll('.category-group')];
-  const filters = [...document.querySelectorAll('[data-filter]')];
-  const cards = groups.flatMap(group => [...group.querySelectorAll('.card')]).map(card => ({
-    card, haystack: card.textContent.normalize('NFKC').toLowerCase()
-  }));
-  let category = 'all';
+const search = document.querySelector('#search');
+const panel = document.querySelector('#search-panel');
+const toggle = document.querySelector('#search-toggle');
+const results = document.querySelector('#results');
+const latest = document.querySelector('#latest');
+const groups = [...document.querySelectorAll('.category-group')];
+const filters = [...document.querySelectorAll('[data-filter]')];
+const cards = [...document.querySelectorAll('.card')];
+const normalize = value => value.normalize('NFKC').trim().toLowerCase();
+const entries = cards.map(card => ({ card, text: normalize(card.textContent + ' ' + card.id) }));
+const featured = cards.filter(card => card.dataset.latest).sort((a, b) => a.dataset.latest - b.dataset.latest).map(card => {
+  const home = document.createComment(card.id);
+  card.before(home);
+  return { card, home };
+});
+let category = 'all';
 
-  function render() {
-    const terms = search.value.normalize('NFKC').trim().toLowerCase().split(/\s+/).filter(Boolean);
-    let matches = 0;
-    for (const { card, haystack } of cards) {
-      const show = (category === 'all' || category === card.dataset.category) && terms.every(term => haystack.includes(term));
-      card.hidden = !show;
-      matches += Number(show);
-    }
-    for (const group of groups) group.hidden = !group.querySelector('.card:not([hidden])');
-    for (const filter of filters) {
-      if (category === filter.dataset.filter) filter.setAttribute('aria-current', 'true');
-      else filter.removeAttribute('aria-current');
-    }
-    featured.hidden = category !== 'all' || terms.length > 0;
-    results.hidden = terms.length === 0;
-    results.textContent = matches ? `找到 ${matches} 个条目` : '没有找到符合条件的条目';
+function render() {
+  const terms = normalize(search.value).split(/\s+/).filter(Boolean);
+  const showLatest = category === 'all' && !terms.length && featured.length > 0;
+  const grid = latest.firstElementChild;
+  for (const { card, home } of featured) {
+    if (showLatest && card.parentElement !== grid) grid.append(card);
+    if (!showLatest && card.parentElement === grid) home.after(card);
   }
-
-  document.querySelector('#search-label').hidden = false;
+  latest.hidden = !showLatest;
+  let matches = 0;
+  for (const { card, text } of entries) {
+    card.hidden = (category !== 'all' && category !== card.dataset.category) || !terms.every(term => text.includes(term));
+    if (!card.hidden) matches++;
+  }
+  for (const group of groups) {
+    const number = group.querySelectorAll('.card:not([hidden])').length;
+    group.hidden = !number;
+    group.querySelector('.group-head > span').textContent = number + ' 个编号';
+  }
+  const visibleGroups = groups.filter(group => !group.hidden);
+  for (const group of visibleGroups) {
+    group.querySelector('.group-head').hidden = category !== 'all' || (terms.length > 0 && visibleGroups.length === 1);
+  }
   for (const filter of filters) {
-    filter.addEventListener('click', event => {
-      event.preventDefault();
-      category = filter.dataset.filter;
-      history.replaceState(null, '', category === 'all' ? location.pathname + location.search : '#' + category);
-      render();
-    });
+    if (category === filter.dataset.filter) filter.setAttribute('aria-current', 'true');
+    else filter.removeAttribute('aria-current');
   }
-  search.addEventListener('input', render);
-  function followHash() {
-    const target = document.getElementById(location.hash.slice(1));
-    category = target?.classList.contains('category-group') ? target.id : target?.dataset.category || 'all';
-    if (target?.classList.contains('card')) search.value = '';
+  const selected = groups.find(group => group.id === category);
+  document.querySelector('#latest-title').textContent = terms.length ? '搜索结果' : selected ? selected.getAttribute('aria-label') : showLatest ? '目前最新视频' : '作品目录';
+  document.querySelector('#count').textContent = (showLatest ? featured.length : matches) + ' 个编号';
+  results.hidden = matches > 0 || !terms.length;
+  results.textContent = results.hidden ? '' : '没有找到匹配的作品，试试其他编号或标题。';
+}
+function showPanel(open) {
+  panel.hidden = !open;
+  toggle.setAttribute('aria-expanded', String(open));
+}
+function resetFilter() {
+  search.value = '';
+  category = 'all';
+}
+toggle.hidden = false;
+toggle.addEventListener('click', () => {
+  const opening = panel.hidden;
+  showPanel(opening);
+  if (opening) search.focus();
+  else {
+    resetFilter();
+    if (groups.some(group => '#' + group.id === location.hash)) history.replaceState(null, '', '#catalog');
     render();
-    if (target?.classList.contains('card')) target.scrollIntoView();
   }
-  window.addEventListener('hashchange', followHash);
-  followHash();
+});
+search.addEventListener('input', render);
+for (const filter of filters) filter.addEventListener('click', event => {
+  event.preventDefault();
+  category = filter.dataset.filter;
+  history.replaceState(null, '', filter.getAttribute('href'));
+  render();
+});
+function followHash() {
+  const target = document.getElementById(location.hash.slice(1));
+  const group = target && target.classList.contains('category-group');
+  resetFilter();
+  if (group) category = target.id;
+  showPanel(Boolean(group));
+  render();
+  if (group || cards.includes(target)) requestAnimationFrame(() => {
+    (group ? document.querySelector('#catalog') : target).scrollIntoView();
+  });
+}
+window.addEventListener('hashchange', followHash);
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href^="#"]:not([data-filter])');
+  if (link && link.hash === location.hash) followHash();
+});
+followHash();
+
+const viewer = document.querySelector('.viewer');
+if (typeof viewer.showModal === 'function') {
+  const fullImage = viewer.querySelector('img');
+  const choices = viewer.querySelector('nav');
+  let links = [], selected = 0, opener;
+  function showCover(index) {
+    selected = index;
+    const link = links[index];
+    fullImage.src = link.href;
+    fullImage.alt = viewer.querySelector('h2').textContent + (link.dataset.label ? ' · ' + link.dataset.label : '');
+    [...choices.children].forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
+  }
+  document.querySelector('#catalog').addEventListener('click', event => {
+    const link = event.target.closest('.poster, .angle');
+    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    opener = link;
+    const card = link.closest('.card');
+    links = [...card.querySelectorAll('.angle')];
+    if (!links.length) links = [link];
+    viewer.querySelector('h2').textContent = card.id + ' · ' + card.querySelector('h3').textContent;
+    choices.textContent = '';
+    choices.hidden = links.length < 2;
+    if (!choices.hidden) links.forEach((source, i) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = source.dataset.label;
+      button.addEventListener('click', () => showCover(i));
+      choices.append(button);
+    });
+    showCover(Math.max(0, links.findIndex(source => source.href === link.href)));
+    viewer.showModal();
+    document.body.classList.add('viewing');
+  });
+  viewer.querySelector('.close-viewer').addEventListener('click', () => viewer.close());
+  viewer.addEventListener('keydown', event => {
+    if (links.length < 2 || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    showCover((selected + (event.key === 'ArrowLeft' ? -1 : 1) + links.length) % links.length);
+  });
+  viewer.addEventListener('click', event => {
+    const bounds = viewer.getBoundingClientRect();
+    if (event.target === viewer && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) viewer.close();
+  });
+  viewer.addEventListener('close', () => {
+    document.body.classList.remove('viewing');
+    if (opener) opener.focus({ preventScroll: true });
+  });
+}
 </script>
 </body>
 </html>
