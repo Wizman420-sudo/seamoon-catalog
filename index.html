@@ -56,9 +56,9 @@ h1, h2, h3, p { margin: 0; }
 .art { position: relative; height: 100%; min-height: 276px; pointer-events: none; }
 .art::before { content: ""; position: absolute; width: 63%; height: 12%; left: 18%; bottom: 7%; background: radial-gradient(ellipse, #8074a03b, #ab9acb1f 36%, transparent 70%); }
 .sculpture { position: absolute; left: 50%; top: 47%; height: 98%; aspect-ratio: 5 / 4; transform: translate(-50%,-50%); }
-.sculpture img, .sculpture canvas { display: block; width: 100%; height: 100%; }
-.sculpture canvas { position: absolute; inset: 0; }
-.sculpture[data-ready] img { visibility: hidden; }
+.sculpture img, .sculpture canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.sculpture .crescent { z-index: 1; }
+.sculpture[data-ready] .wave-rest { visibility: hidden; }
 .motion { position: absolute; right: 0; bottom: 14px; width: 44px; height: 44px; padding: 0; display: grid; place-items: center; border: 0; background: transparent; pointer-events: auto; isolation: isolate; }
 .motion::before { content: ""; position: absolute; z-index: -1; inset: 6px; border-radius: 50%; background: #ffffffbf; border: 1px solid #d9d4e2; }
 .motion span { width: 10px; height: 11px; border-inline: 3px solid #4c465b; }
@@ -86,25 +86,30 @@ h1, h2, h3, p { margin: 0; }
 .group-head h2 { font-size: 1.45rem; letter-spacing: -.04em; }
 .group-head small { color: var(--muted); font-size: .95rem; font-weight: 450; padding-left: 5px; }
 .card-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); align-items: start; gap: clamp(15px, 2vw, 27px); }
-#latest .card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+#latest .card-grid { display: flex; }
+#latest .card { flex: 1 1 0; }
+#latest .card:has(.poster:nth-child(2)) { flex-grow: 1.65; }
 .card { min-width: 0; padding: 6px; background: white; border: 1px solid #e5e3e9; border-radius: 25px; overflow-wrap: anywhere; box-shadow: 0 5px 23px #2b234707; }
-.picture { position: relative; isolation: isolate; }
-.poster { display: block; position: relative; overflow: hidden; border-radius: 19px; aspect-ratio: 1.76; color: #292631; cursor: zoom-in; background: #eae8ee; }
-.poster img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 50% var(--focus,79%); }
-.catalog-id, .recommended { position: absolute; z-index: 1; top: 12px; pointer-events: none; border-radius: 20px; }
-.catalog-id { left: 12px; padding: 5px 11px; color: #24223a; background: #faf9ffed; font: 650 .83rem/1.2 var(--mono); }
-.recommended { right: 12px; padding: 5px 10px; font: 600 .84rem/1.2 var(--sans); color: white; background: var(--violet); }
-.enlarge { position: absolute; right: 11px; bottom: 11px; display: grid; place-items: center; width: 29px; height: 29px; border-radius: 50%; background: #ffffffeb; }
-.enlarge::before, .enlarge::after { content: ""; position: absolute; background: currentColor; width: 11px; height: 1.5px; }
-.enlarge::after { transform: rotate(90deg); }
-.angles { position: absolute; bottom: 5px; left: 11px; right: 46px; display: flex; align-items: center; flex-wrap: wrap; gap: 0 3px; pointer-events: none; }
-.angle { position: relative; display: inline-flex; align-items: center; min-height: 44px; padding-inline: 10px; pointer-events: auto; isolation: isolate; color: #282435; font-size: .82rem; font-weight: 600; }
-.angle::before { content: ""; position: absolute; z-index: -1; inset: 7px 0; border-radius: 22px; background: #fffffff0; }
+.card-head { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 10px; min-height: 37px; padding: 4px 10px 9px; }
+.catalog-id, .recommended { display: inline-block; border-radius: 20px; }
+.catalog-id { padding: 4px 9px; color: #443865; background: #f0edf6; font: 650 .84rem/1.2 var(--mono); }
+.recommended { padding: 4px 9px; font: 600 .84rem/1.2 var(--sans); color: white; background: var(--violet); }
+.picture {
+  --thumb-height: clamp(265px, 55vh, 390px);
+  display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: center; gap: 6px 8px;
+  padding: 7px; margin-inline: 4px; border-radius: 15px; background: #f6f5f8;
+}
+.poster {
+  display: block; min-width: 0; flex: var(--ratio) 1 calc(130px * var(--ratio));
+  max-width: min(100%, calc(var(--thumb-height) * var(--ratio))); text-align: center; cursor: zoom-in;
+}
+.poster img { display: block; width: 100%; height: auto; object-fit: contain; }
+.angle-label { display: block; padding-top: 5px; font-size: .86rem; font-weight: 560; color: #564d64; }
 .card-copy { padding: clamp(12px, 1.4vw, 20px) clamp(10px, 1.5vw, 22px) 4px; }
-.card-category { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 8px; color: #6b6476; font-size: .84rem; }
+.card-category { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 8px; margin-left: auto; color: #6b6476; font-size: .84rem; }
 .card-category em { order: 1; font-style: normal; color: var(--muted); }
 .card-category span + span { order: 2; padding-left: 8px; border-left: 1px solid #d8d4de; }
-.card h3 { margin-top: 5px; font-size: clamp(1.18rem, 2.04vw, 1.67rem); font-weight: 650; line-height: 1.38; letter-spacing: -.038em; }
+.card h3 { font-size: clamp(1.18rem, 2.04vw, 1.67rem); font-weight: 650; line-height: 1.38; letter-spacing: -.038em; }
 .facts { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-top: 8px; color: #55505e; font-size: .93rem; font-weight: 540; font-variant-numeric: tabular-nums; }
 .facts .price { color: var(--violet); font-weight: 680; }
 .facts span + span::before { content: ""; display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: #aaa3b3; vertical-align: middle; margin-right: 10px; }
@@ -136,8 +141,6 @@ body.viewing { overflow: hidden; }
   .search-toggle:hover, .search-toggle[aria-expanded="true"], .latest-links a:hover::before, .motion:hover::before { background: #f1edf8; border-color: #c5b6d7; }
 }
 @media (prefers-reduced-motion:no-preference) {
-  .poster img { transition: transform .45s ease-out; }
-  @media (hover:hover) { .poster:hover img { transform: scale(1.025); } }
   @supports (animation-timeline: view()) and (animation-range: entry 0% entry 35%) {
     @keyframes arrive { from { transform: translateY(10px); } to { transform: translateY(0); } }
     .card { animation: arrive linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
@@ -166,9 +169,8 @@ body.viewing { overflow: hidden; }
   .count { font-size: .8rem; }
   .search-toggle { padding: 0 11px; gap: 7px; }
   .collection-head { margin-bottom: 12px; }
-  .card-grid, #latest .card-grid { grid-template-columns: minmax(0,1fr); gap: 17px; }
+  .card-grid, #latest .card-grid { display: grid; grid-template-columns: minmax(0,1fr); gap: 17px; }
   .card { border-radius: 21px; padding: 5px; }
-  .poster { aspect-ratio: 1.69; border-radius: 16px; }
   .card-copy { padding: 12px 11px 3px; }
   .viewer img { height: 58vh; height: 58dvh; }
 }
@@ -189,10 +191,11 @@ body.viewing { overflow: hidden; }
       </div>
       <div class="art">
         <div class="sculpture" aria-hidden="true">
-          <img src="moon-pearl.webp" alt="" width="720" height="576" fetchpriority="high">
+          <img class="crescent" src="crescent-front.webp" alt="" width="720" height="576" fetchpriority="high">
+          <img class="wave-rest" src="wave-rest.webp" alt="" width="720" height="576">
           <canvas width="320" height="256" hidden></canvas>
         </div>
-        <button type="button" class="motion" hidden aria-label="暂停动效" title="暂停动效"><span aria-hidden="true"></span></button>
+        <button type="button" class="motion" hidden aria-label="暂停海浪动效" title="暂停海浪动效"><span aria-hidden="true"></span></button>
       </div>
     </div>
   </div>
@@ -208,7 +211,7 @@ body.viewing { overflow: hidden; }
   </div>
   <p id="results" role="status" hidden></p>
   <section id="latest" aria-labelledby="latest-title" hidden><div class="card-grid"></div></section>
-  <section class="category-group" id="food" aria-label="食物"><div class="group-head"><h2>食物 <small lang="en">Food</small></h2><span>2 个编号</span></div><div class="card-grid"><article class="card" id="F060" data-category="food" data-latest="1"><div class="picture" style="--focus:98%"><a class="poster" href="f060-2-d238fc88.webp" aria-label="放大查看帆布鞋和靴子踩两只烤鸡的封面"><img src="f060-2-d238fc88.webp" width="540" height="675" loading="eager" decoding="async" alt="帆布鞋和靴子踩两只烤鸡"><span class="enlarge" aria-hidden="true"></span></a><span class="catalog-id">F060</span><div class="angles" aria-label="各视角封面"><a class="angle" href="f060-1-91c6fec2.webp" data-label="A 横屏">A 横屏</a><a class="angle" href="f060-2-d238fc88.webp" data-label="B 竖屏">B 竖屏</a></div></div><div class="card-copy"><div class="card-category"><em lang="en">Food</em><span>食物</span><span>A + B</span></div><h3><a href="#F060">帆布鞋和靴子踩两只烤鸡</a></h3><p class="facts"><span>A+B合计13分钟</span><span class="price">整套99金币</span></p><p class="description">双视角 A 横屏 + B 竖屏</p><details class="translation"><summary lang="en">English</summary><div lang="en"><p>Canvas Shoes and Boots Crushing Two Roast Chickens</p><p>A+B total: 13 min · Complete set: 99 coins</p></div></details></div></article><article class="card" id="F059" data-category="food" data-latest="2"><div class="picture" style="--focus:68%"><a class="poster" href="f059-1-96961435.webp" aria-label="放大查看双视角运动鞋海月姐姐走秀踩水果的封面"><img src="f059-1-96961435.webp" width="540" height="675" loading="eager" decoding="async" alt="双视角运动鞋海月姐姐走秀踩水果"><span class="enlarge" aria-hidden="true"></span></a><span class="catalog-id">F059</span></div><div class="card-copy"><div class="card-category"><em lang="en">Food</em><span>食物</span></div><h3><a href="#F059">双视角运动鞋海月姐姐走秀踩水果</a></h3><p class="facts"><span>完整版13分钟</span><span class="price">99金币</span></p><p class="description">开头穿长袜，踩到一半换成船袜，包含换袜过程。</p><details class="translation"><summary lang="en">English</summary><div lang="en"><p>Haiyue Walking and Crushing Fruit in Sneakers - Two Camera Angles</p><p>Starts in long socks and switches to no-show socks midway through. The sock-changing process is included.</p><p>Full version: 13 min · 99 coins</p></div></details></div></article></div></section>
+  <section class="category-group" id="food" aria-label="食物"><div class="group-head"><h2>食物 <small lang="en">Food</small></h2><span>2 个编号</span></div><div class="card-grid"><article class="card" id="F060" data-category="food" data-latest="1"><div class="card-head"><span class="catalog-id">F060</span><div class="card-category"><em lang="en">Food</em><span>食物</span><span>A + B</span></div></div><div class="picture"><a class="poster" href="f060-1-91c6fec2.webp" data-label="A 横屏" aria-label="放大查看帆布鞋和靴子踩两只烤鸡 · A 横屏的封面" style="--ratio:0.750000"><img src="f060-1-91c6fec2.webp" width="540" height="720" loading="eager" decoding="async" alt="帆布鞋和靴子踩两只烤鸡 · A 横屏"><span class="angle-label">A 横屏</span></a><a class="poster" href="f060-2-d238fc88.webp" data-label="B 竖屏" aria-label="放大查看帆布鞋和靴子踩两只烤鸡 · B 竖屏的封面" style="--ratio:0.800000"><img src="f060-2-d238fc88.webp" width="540" height="675" loading="eager" decoding="async" alt="帆布鞋和靴子踩两只烤鸡 · B 竖屏"><span class="angle-label">B 竖屏</span></a></div><div class="card-copy"><h3><a href="#F060">帆布鞋和靴子踩两只烤鸡</a></h3><p class="facts"><span>A+B合计13分钟</span><span class="price">整套99金币</span></p><p class="description">双视角 A 横屏 + B 竖屏</p><details class="translation"><summary lang="en">English</summary><div lang="en"><p>Canvas Shoes and Boots Crushing Two Roast Chickens</p><p>A+B total: 13 min · Complete set: 99 coins</p></div></details></div></article><article class="card" id="F059" data-category="food" data-latest="2"><div class="card-head"><span class="catalog-id">F059</span><div class="card-category"><em lang="en">Food</em><span>食物</span></div></div><div class="picture"><a class="poster" href="f059-1-96961435.webp" data-label="" aria-label="放大查看双视角运动鞋海月姐姐走秀踩水果的封面" style="--ratio:0.800000"><img src="f059-1-96961435.webp" width="540" height="675" loading="eager" decoding="async" alt="双视角运动鞋海月姐姐走秀踩水果"></a></div><div class="card-copy"><h3><a href="#F059">双视角运动鞋海月姐姐走秀踩水果</a></h3><p class="facts"><span>完整版13分钟</span><span class="price">99金币</span></p><p class="description">开头穿长袜，踩到一半换成船袜，包含换袜过程。</p><details class="translation"><summary lang="en">English</summary><div lang="en"><p>Haiyue Walking and Crushing Fruit in Sneakers - Two Camera Angles</p><p>Starts in long socks and switches to no-show socks midway through. The sock-changing process is included.</p><p>Full version: 13 min · 99 coins</p></div></details></div></article></div></section>
 </main>
 <footer class="foot"><div class="wrap foot-inner">
   <a class="foot-brand" href="#top" lang="en">SeaMoon</a>
@@ -326,13 +329,12 @@ if (typeof viewer.showModal === 'function') {
     [...choices.children].forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
   }
   document.querySelector('#catalog').addEventListener('click', event => {
-    const link = event.target.closest('.poster, .angle');
+    const link = event.target.closest('.poster');
     if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     opener = link;
     const card = link.closest('.card');
-    links = [...card.querySelectorAll('.angle')];
-    if (!links.length) links = [link];
+    links = [...card.querySelectorAll('.poster')];
     viewer.querySelector('h2').textContent = card.id + ' · ' + card.querySelector('h3').textContent;
     choices.textContent = '';
     choices.hidden = links.length < 2;
@@ -343,7 +345,7 @@ if (typeof viewer.showModal === 'function') {
       button.addEventListener('click', () => showCover(i));
       choices.append(button);
     });
-    showCover(Math.max(0, links.findIndex(source => source.href === link.href)));
+    showCover(links.indexOf(link));
     viewer.showModal();
     document.body.classList.add('viewing');
   });
@@ -364,9 +366,8 @@ if (typeof viewer.showModal === 'function') {
 }
 </script>
 <script>
-// Only draw the tiny, pre-rendered sequence while the sculpture is on screen.
-// The still also covers slow connections and browsers with animation disabled.
-(function moonMotion() {
+// The moon is a static foreground image. Only the wave is drawn to the canvas.
+(function waveMotion() {
   const sculpture = document.querySelector('.sculpture');
   const canvas = sculpture.querySelector('canvas');
   const context = canvas.getContext('2d');
@@ -380,14 +381,15 @@ if (typeof viewer.showModal === 'function') {
   let request = 0, lastTime = 0, elapsed = 0, lastFrame = -1;
 
   function draw(time) {
-    elapsed = (elapsed + (lastTime ? Math.min(time - lastTime, 100) : 0)) % 6400;
+    elapsed = (elapsed + (lastTime ? Math.min(time - lastTime, 100) : 0)) % 4000;
     lastTime = time;
-    const scroll = Math.min(1, Math.max(0, window.scrollY / 300));
-    const frame = Math.round(19.5 * (1 + Math.sin(elapsed * Math.PI / 3200 + scroll * .75)));
+    const frame = Math.floor(elapsed * 64 / 4000);
     if (frame !== lastFrame) {
       const w = canvas.width, h = canvas.height;
+      const tileWidth = atlas.naturalWidth / 8, tileHeight = atlas.naturalHeight / 8;
       context.clearRect(0, 0, w, h);
-      context.drawImage(atlas, (frame % 8) * w, Math.floor(frame / 8) * h, w, h, 0, 0, w, h);
+      context.drawImage(atlas, (frame % 8) * tileWidth, Math.floor(frame / 8) * tileHeight, tileWidth, tileHeight,
+                        (w - tileWidth) / 2, (h - tileHeight) / 2, tileWidth, tileHeight);
       if (lastFrame === -1) {
         canvas.hidden = false;
         sculpture.setAttribute('data-ready', '');
@@ -399,7 +401,7 @@ if (typeof viewer.showModal === 'function') {
   function sync() {
     cancelAnimationFrame(request);
     lastTime = 0;
-    const label = playing ? '暂停动效' : '播放动效';
+    const label = playing ? '暂停海浪动效' : '播放海浪动效';
     control.setAttribute('aria-label', label);
     control.title = label;
     control.toggleAttribute('data-paused', !playing);
@@ -407,7 +409,7 @@ if (typeof viewer.showModal === 'function') {
     if (loaded) request = requestAnimationFrame(draw);
     else if (!requested) {
       requested = true;
-      atlas.src = 'moon-turn.webp';
+      atlas.src = 'wave-flow.webp';
     }
   }
   atlas.onload = () => { loaded = true; sync(); };
