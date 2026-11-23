@@ -687,7 +687,7 @@ return exports; })().init(engine);
   render();
   const bytes = base64 => Uint8Array.from(atob(base64), ch => ch.charCodeAt(0));
   async function load() {
-    const response = await fetch('catalog-locked.bin?v=7345b3f9b1d32bedb64f', {credentials:'omit', referrerPolicy:'no-referrer'});
+    const response = await fetch('catalog-locked.bin?v=167a2369e810ceac660a', {credentials:'omit', referrerPolicy:'no-referrer'});
     if (!response.ok) throw new Error('Unavailable');
     const data = new Uint8Array(await response.arrayBuffer());
     const boundary = data.subarray(0, 2048).indexOf(10);
