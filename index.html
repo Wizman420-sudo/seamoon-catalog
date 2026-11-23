@@ -3,211 +3,221 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<meta name="theme-color" content="#0e0c0f">
+<meta name="theme-color" content="#09090a">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex,noimageindex">
 <link rel="icon" href="seamoon-mark.webp" type="image/webp">
-<title>SeaMoon 海月 · 目录入口</title>
+<link rel="preload" href="portal-noir.webp" as="image" type="image/webp" fetchpriority="high">
+<title>海月目录</title>
 <style>
 :root {
   color-scheme: dark;
-  --paper: #e9e0d3;
-  --ink: #0e0c0f;
-  --screen-height: 100vh;
+  --art: url("portal-noir.webp");
+  --ink: #09090a;
+  --paper: #e6e1da;
+  --muted: #c4beb8;
+  --screen: 100vh;
+  background: var(--ink); color: var(--paper);
   font-family: Georgia, "Songti SC", STSong, "Noto Serif CJK SC", "Yu Mincho", Batang, serif;
-  color: var(--paper);
-  background: var(--ink);
 }
+@supports (height: 100dvh) { :root { --screen: 100dvh; } }
 * { box-sizing: border-box; }
-body { margin: 0; }
+body, figure, h1, h2, p, form { margin: 0; }
 button, input, select { font: inherit; color: inherit; }
 button, select { -webkit-tap-highlight-color: transparent; }
-:focus-visible { outline: 2px solid #e6c3b2; outline-offset: 3px; }
+:focus-visible { outline: 2px solid #f1ece4; outline-offset: 3px; }
 .shell {
-  position: relative; isolation: isolate;
-  height: var(--visible-height, var(--screen-height));
-  display: grid; grid-template-rows: auto minmax(0, 1fr);
-  overflow: hidden;
-  background: radial-gradient(ellipse at 50% 25%, #371922 0, #1c1017 46%, var(--ink) 80%);
-}
-@supports (height: 100dvh) { :root { --screen-height: 100dvh; } }
-.shell::before {
-  content: ""; position: absolute; z-index: -1; inset: -28px; pointer-events: none;
-  background: url("art-throne-thumb.webp") center 38% / cover no-repeat;
-  opacity: .23; filter: blur(24px);
+  --height: var(--visible-height, var(--screen));
+  height: var(--height); min-height: var(--height); overflow-y: auto;
+  display: flex; flex-direction: column;
+  background: var(--ink);
 }
 .masthead {
-  position: relative; z-index: 2; flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between; flex: none;
+  min-height: clamp(44px, 9.55vw, 66px);
   padding: env(safe-area-inset-top, 0px) max(5.8%, env(safe-area-inset-right, 0px)) 0 max(7.1%, env(safe-area-inset-left, 0px));
-  min-height: clamp(44px, 10vw, 66px);
-  background: linear-gradient(#0d0b0ef5, #0d0b0ee0);
-  border-bottom: 1px solid #76616a55;
+  background: #09090a;
 }
+/* The supplied design provides the wordmark, portrait and silver ornaments in one image. */
 .brand {
-  flex: none; background: url("portal-wordmark.webp") center / contain no-repeat;
-  width: clamp(116px, 34.55vw, 188px);
-  aspect-ratio: 325 / 75;
+  display: block; width: clamp(121px, 34.44vw, 201px); aspect-ratio: 324 / 76;
+  background: var(--art) 10.6969% .7519% / 290.4321% 2200% no-repeat;
+  mix-blend-mode: lighten;
 }
 .language { position: relative; display: flex; align-items: center; }
 .language::after {
-  content: ""; position: absolute; right: 2px; top: calc(50% - 5px);
-  width: 8px; height: 8px;
-  border: solid #d6cbbd; border-width: 0 1px 1px 0;
+  content: ""; position: absolute; right: 1px; top: calc(50% - 5px);
+  width: 7px; height: 7px; border: solid #dedbd6; border-width: 0 1.3px 1.3px 0;
   transform: rotate(45deg); pointer-events: none;
 }
 select {
-  -webkit-appearance: none; appearance: none;
-  border: 0; border-radius: 2px; background: transparent; cursor: pointer;
-  min-height: 44px; max-width: 9em; padding: 0 21px 0 5px;
-  font-size: clamp(16px, 3.8vw, 20px); text-align: right; text-align-last: right;
-}
-option { color: var(--paper); background: var(--ink); }
-main {
-  min-height: 0; min-width: 0; display: grid;
-  grid-template-rows: minmax(0, 1fr) auto; overflow: auto;
-}
-.portrait-stage {
-  min-width: 0; min-height: 0; overflow: hidden;
-  display: flex; justify-content: center;
-}
-.portrait-mat {
-  position: relative; height: 100%; max-width: 100%; aspect-ratio: 9 / 16;
-}
-.portrait {
-  display: block; width: 100%; height: 100%; min-width: 0; min-height: 0;
-  object-fit: contain; object-position: center;
-}
-/* Let a little of the outer throne and roses carry into the margins. */
-@supports ((mask-image: linear-gradient(black, transparent)) or (-webkit-mask-image: linear-gradient(black, transparent))) {
-  .portrait-mat::before, .portrait-mat::after {
-    content: ""; position: absolute; top: 0; width: 100%; height: 100%;
-    background: url("art-throne.webp") center / contain no-repeat;
-    transform: scaleX(-1); pointer-events: none;
-    -webkit-mask-image: var(--edge); mask-image: var(--edge);
-  }
-  .portrait-mat::before { right: 100%; --edge: linear-gradient(to right, black 3%, transparent 18%); }
-  .portrait-mat::after { left: 100%; --edge: linear-gradient(to left, black 3%, transparent 18%); }
-}
-.panel {
-  position: relative;
-  padding: 12px max(6%, env(safe-area-inset-right, 0px)) max(14px, env(safe-area-inset-bottom, 0px)) max(6%, env(safe-area-inset-left, 0px));
-  background: linear-gradient(180deg, #100d10e8, #100c10);
-}
-.panel::before {
-  content: ""; position: absolute; inset: 0 5% auto; height: 1px;
-  background: linear-gradient(90deg, transparent, #927979 37%, #b8a28c 50%, #927979 63%, transparent);
-}
-.panel::after {
-  content: ""; position: absolute; top: -3px; left: 50%; width: 5px; height: 5px;
-  transform: translateX(-50%) rotate(45deg); border: 1px solid #be9b88;
-  background: #782638; pointer-events: none;
-}
-.access { width: min(100%, 440px); margin: 0 auto; }
-form { margin: 0; }
-label { display: block; margin: 0 0 .5em; color: #f4e5db; text-shadow: 0 1px 4px #000; font-size: clamp(14px, 3.5vw, 18px); letter-spacing: .10em; }
-.field {
-  display: flex; align-items: center; position: relative; min-width: 0;
-  border: 1px solid #a99b8e; border-radius: 6px; background: #110f12;
-  box-shadow: inset 0 0 0 1px #45383c;
-}
-.field:focus-within { outline: 1px solid #e7c4b3; outline-offset: 1px; }
-input {
-  min-width: 0; flex: 1; height: clamp(44px, 9.4vw, 54px); border: 0; outline: none;
-  font-size: 16px; background: transparent; padding: 0 0 0 12px; letter-spacing: .035em;
-}
-input::placeholder { color: #afa39e; opacity: 1; }
-input:focus-visible { outline: none; }
-.lock {
-  position: relative; flex: none; margin: 5px 0 0 15px; width: 14px; height: 11px;
-  border: 1px solid #cec2b5; border-radius: 2px;
-}
-.lock::before {
-  content: ""; position: absolute; width: 8px; height: 7px;
-  left: 1px; bottom: 9px; border: 1px solid #cec2b5; border-bottom: 0;
-  border-radius: 7px 7px 0 0;
-}
-.reveal {
-  position: relative; display: grid; place-items: center;
-  border: 0; border-radius: 4px; width: 44px; min-height: 44px; flex: none;
+  appearance: none; -webkit-appearance: none; border: 0; border-radius: 2px;
+  min-height: 44px; padding: 0 18px 0 5px; max-width: 9em;
+  font-size: clamp(15px, 3.7vw, 19px); text-align: right; text-align-last: right;
   background: transparent; cursor: pointer;
 }
-.reveal .eye {
-  width: 17px; height: 17px; border: 1.3px solid currentColor; border-radius: 78% 12%;
-  transform: rotate(45deg); display: grid; place-items: center;
+option { color: var(--paper); background: var(--ink); }
+main { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.scene {
+  position: relative; flex: 0 1 auto; overflow: hidden; min-height: clamp(168px, 44vw, 320px);
+  height: min(88.7354vw, calc(var(--height) * .53));
+  background: #101011;
 }
-.eye::before { content: ""; width: 5px; height: 5px; border: 1px solid currentColor; border-radius: 50%; }
-.reveal[aria-pressed="true"]::after {
-  content: ""; position: absolute; width: 21px; height: 1px;
-  background: currentColor; box-shadow: 0 -1px #110f12; transform: rotate(-40deg);
+.portrait {
+  position: absolute; top: 0; left: 0; width: 100%;
+  aspect-ratio: 941 / 835;
+  background: var(--art) 50% 10.6332% / 100% 200.2395% no-repeat;
 }
+.scene::after {
+  content: ""; pointer-events: none; position: absolute; inset: auto 0 -1px;
+  height: min(13vw, 74px); background: linear-gradient(transparent, #111112);
+}
+.details {
+  position: relative; isolation: isolate; flex: 1 0 auto; display: flex; flex-direction: column;
+  justify-content: space-between; gap: clamp(9px, 1.5vh, 16px); min-width: 0;
+  padding: 0 0 max(6px, env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, #111112, #141314 40%, #09090a 83%);
+}
+.details::before {
+  content: ""; pointer-events: none; position: absolute; z-index: -1; inset: 0;
+  background: var(--art) 95.0556% 65.8888% / 712.8788% 777.6744% no-repeat;
+  opacity: .27; mask-image: linear-gradient(transparent, black 18%, black 56%, transparent 96%);
+}
+.intro, .private { text-align: center; }
+.intro { padding-inline: 5%; }
+.moon-rule {
+  width: min(72%, 340px); aspect-ratio: 615 / 59; margin: 0 auto;
+  background: var(--art) 50% 95.7223% / 153.0081% 2833.8983% no-repeat;
+  mix-blend-mode: lighten;
+}
+h1 {
+  font-weight: 500; font-size: clamp(30px, 8.6vw, 54px); line-height: 1.15;
+  letter-spacing: .22em; text-indent: .22em; text-wrap: balance;
+  text-shadow: 0 1px 7px #000;
+}
+.subtitle { margin-top: .30em; font-size: clamp(13px, 3.28vw, 17px); line-height: 1.45; letter-spacing: .12em; color: var(--muted); }
+.access {
+  width: min(100%, 570px); margin-inline: auto;
+  padding-inline: max(7.15%, env(safe-area-inset-left, 0px)) max(7.15%, env(safe-area-inset-right, 0px));
+}
+label { display: block; margin-bottom: 5px; font-size: clamp(14px, 3.5vw, 18px); letter-spacing: .10em; line-height: 1.3; }
+.field {
+  min-width: 0; display: flex; align-items: center; overflow: hidden;
+  border: 1px solid #b4afa8; border-radius: 6px; background: #0a0a0bc9;
+  box-shadow: inset 0 0 0 1px #dddddd0b;
+}
+.field:focus-within { outline: 1px solid #ddd5cd; outline-offset: 2px; }
+input {
+  flex: 1; min-width: 0; height: clamp(42px, 8vw, 50px); padding: 0 0 0 12px; border: 0;
+  background: transparent; outline: 0; font-size: 16px; letter-spacing: .04em;
+}
+input:focus-visible { outline: 0; }
+input::placeholder { color: #aaa5a1; opacity: 1; }
+.lock { position: relative; flex: none; width: 13px; height: 10px; margin: 5px 0 0 14px; border: 1px solid #ccc6bd; border-radius: 2px; }
+.lock::before {
+  content: ""; position: absolute; width: 7px; height: 7px; left: 1px; bottom: 8px;
+  border: 1px solid #ccc6bd; border-bottom: 0; border-radius: 6px 6px 0 0;
+}
+.reveal { position: relative; flex: none; display: grid; place-items: center; width: 44px; min-height: 42px; border: 0; background: transparent; cursor: pointer; }
+.eye { width: 16px; height: 16px; display: grid; place-items: center; border: 1.2px solid; border-radius: 78% 12%; transform: rotate(45deg); }
+.eye::before { content: ""; width: 5px; height: 5px; border: 1px solid; border-radius: 50%; }
+.reveal[aria-pressed="true"]::after { content: ""; position: absolute; width: 21px; height: 1px; background: currentColor; transform: rotate(-40deg); }
 .enter {
-  display: flex; align-items: center; justify-content: center; gap: .9em;
-  margin: 10px 0 0; width: 100%; min-height: clamp(46px, 10.4vw, 59px);
-  padding: .4em 1em; border: 1px solid #ad988d; border-radius: 7px;
-  background: radial-gradient(ellipse at 58% 0%, #86203270, transparent 62%),
-              linear-gradient(#68313a, #430a15 13%, #310911 52%, #24090e);
-  box-shadow: inset 0 0 0 2px #251114, inset 0 3px 7px #ba6a6b55, 0 3px 8px #0008;
-  font-size: clamp(17px, 4.1vw, 23px); letter-spacing: .10em; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: .85em;
+  width: 100%; min-height: clamp(44px, 9.7vw, 56px); margin-top: 9px; padding: .35em 1em;
+  color: #100f10; border: 1px solid #bdb7b0; border-radius: 7px; cursor: pointer;
+  font-size: clamp(17px, 4.2vw, 23px); font-weight: 600; letter-spacing: .1em;
+  background: linear-gradient(105deg, #4d4949ba 0%, #aaa39e72 24%, #ded8d2ea 50%, #b1aca67a 72%, #575455c9 100%),
+              var(--art) 87.9630% 79.4776% / 508.6486% 2612.5% no-repeat, #c6c0b9;
+  box-shadow: inset 0 0 0 2px #343132a8, inset 0 3px 4px #fff7, 0 2px 7px #0009;
 }
-.enter:disabled { opacity: .66; cursor: wait; }
-@media (hover:hover) { .enter:hover:enabled { filter: brightness(1.16); } }
-.arrow { width: 19px; height: 1px; background: currentColor; position: relative; }
-.arrow::after { content: ""; position: absolute; right: 0; top: -3px; width: 6px; height: 6px; border: solid currentColor; border-width: 1px 1px 0 0; transform: rotate(45deg); }
-#status { margin: 0; color: #f2b9bd; font-size: .92rem; line-height: 1.55; }
-#status:not(:empty) { margin-top: .65rem; }
-/* On shorter phones, put the two controls on one line to give the portrait more height. */
-@media (min-aspect-ratio: 12/25) and (max-width: 599px) {
-  form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 9px; }
-  label, #status { grid-column: 1 / -1; margin: 0; }
-  .enter { margin: 0; min-height: 46px; gap: .55em; letter-spacing: .04em; padding-inline: .75em; }
-  .arrow { width: 13px; }
-  #status:empty { display: none; }
-  #status:not(:empty) { margin-top: 0; }
+.enter:disabled { opacity: .65; cursor: wait; }
+@media (hover: hover) { .enter:hover:enabled { filter: brightness(1.09); } }
+.arrow { position: relative; width: 22px; height: 1px; background: currentColor; }
+.arrow::after { content: ""; position: absolute; width: 7px; height: 7px; right: 1px; top: -3.5px; border: solid; border-width: 1px 1px 0 0; transform: rotate(45deg); }
+#status { color: #f1bcb9; font-size: .9rem; line-height: 1.45; }
+#status:not(:empty) { margin-top: 6px; }
+.private { position: relative; overflow: hidden; padding: 0 7% 7px; }
+.private::before, .private::after {
+  content: ""; position: absolute; bottom: 0; width: min(17.75%, 95px); aspect-ratio: 167 / 225;
+  background-image: var(--art); background-size: 563.4731% 743.1111%; background-repeat: no-repeat;
+  mix-blend-mode: lighten; pointer-events: none;
 }
-@media (max-width: 389px) {
-  html:not([lang="zh-CN"]) form { grid-template-columns: minmax(0, 1fr); }
+.private::before { left: .5%; background-position: .646% 98.9634%; }
+.private::after { right: .5%; background-position: 99.354% 98.9634%; }
+.private > * { position: relative; z-index: 1; }
+h2 { font-weight: 500; font-size: clamp(17px, 4.3vw, 24px); line-height: 1.32; letter-spacing: .09em; text-wrap: balance; }
+.private-copy { margin: .35em auto 0; max-width: 40em; font-size: clamp(12px, 2.95vw, 16px); line-height: 1.52; letter-spacing: .085em; color: #d0cac4; }
+.private-copy span { display: block; text-wrap: pretty; }
+.signature {
+  width: min(80%, 345px); aspect-ratio: 625 / 101; margin: 5px auto 0;
+  background: var(--art) 50% 98.2177% / 150.56% 1655.4455% no-repeat;
+  mix-blend-mode: lighten;
 }
-/* Keep the whole portrait tall on wider windows, with the form beside it. */
-@media (min-width: 600px) and (min-aspect-ratio: 1/1) {
-  .masthead { padding-inline: max(5%, env(safe-area-inset-left, 0px)) max(5%, env(safe-area-inset-right, 0px)); }
-  main {
-    width: min(100%, 1180px); margin-inline: auto;
-    grid-template: minmax(0, 1fr) / minmax(0, 1.25fr) minmax(0, 1fr);
-    padding-inline: max(20px, env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-right, 0px));
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  .panel {
-    align-self: center; width: min(94%, 460px); justify-self: center;
-    padding: clamp(22px, 4vh, 42px) clamp(15px, 4vw, 44px);
-    background: radial-gradient(ellipse, #170d13dd, #120d1270 70%, transparent);
-  }
-  .panel::before { left: 0; right: 0; }
+html[lang="en"] h1, html[lang="ko"] h1 { letter-spacing: .035em; text-indent: 0; }
+html[lang="en"] :is(.subtitle, label, .enter, h2, .private-copy), html[lang="ko"] :is(.subtitle, .private-copy) { letter-spacing: .015em; }
+html[lang="ja"] h1 { letter-spacing: .07em; text-indent: 0; }
+@media (max-width: 599px) {
+  .shell.compact .scene { min-height: 40px; height: clamp(55px, calc(var(--height) * .22), 95px); }
+  .shell.compact .portrait { top: 50%; transform: translateY(-46%); }
+  .shell.compact .scene::after { height: 16px; }
+  .shell.compact .moon-rule { height: 9px; width: 94px; }
+  .shell.compact .details { gap: 8px; }
+  .shell.compact .intro h1 { font-size: 24px; }
 }
-.shell.compact .panel { padding-block: 6px max(6px, env(safe-area-inset-bottom, 0px)); }
-.shell.compact .enter { min-height: 44px; }
+@media (min-width: 720px) and (min-aspect-ratio: 11/10) {
+  .masthead { padding-inline: 5.6%; border-bottom: 1px solid #484447; }
+  main { width: min(100%, 1400px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); }
+  .scene { height: auto; min-height: 0; align-self: stretch; display: flex; align-items: center; background: #0b0b0c; }
+  .portrait { position: relative; }
+  .scene::after { inset: 0 0 0 auto; width: min(5vw, 70px); height: auto; background: linear-gradient(90deg, transparent, #0c0c0d); }
+  .details { justify-content: center; gap: clamp(16px, 3vh, 32px); padding: clamp(18px, 5vh, 60px) 4% 24px; background: #0c0c0d; }
+  .access { width: min(94%, 460px); padding: 0; }
+  .private { padding-top: 3px; }
+  .intro h1 { font-size: clamp(35px, 4vw, 60px); }
+}
+@media (min-width: 1100px) and (min-height: 650px) {
+  .portrait { width: min(100%, 850px); }
+}
 </style>
 </head>
 <body>
 <div class="shell">
-<header class="masthead"><span class="brand" role="img" aria-label="SeaMoon"></span>
-<div class="language"><select id="gate-language" aria-label="语言" autocomplete="off">
-<option value="zh-CN" lang="zh-CN">中文</option><option value="en" lang="en">English</option><option value="ko" lang="ko">한국어</option><option value="ja" lang="ja">日本語</option>
-</select></div></header>
-<main><div class="portrait-stage"><div class="portrait-mat">
-<img class="portrait" id="queen-portrait" src="art-throne.webp" width="936" height="1664" fetchpriority="high" alt="红月下，银发女王头戴王冠，手执酒杯，双腿交叠坐在王座上。">
-</div></div>
-<div class="panel"><div class="access">
-<form id="gate-form" aria-labelledby="password-label" novalidate><label id="password-label" for="access-code">访问口令</label>
-<div class="field"><span class="lock" aria-hidden="true"></span>
-<input id="access-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="请输入访问口令" required aria-describedby="status">
-<button type="button" class="reveal" id="reveal" aria-label="显示口令" aria-controls="access-code" aria-pressed="false"><span class="eye" aria-hidden="true"></span></button></div>
-<button type="submit" class="enter" id="enter" disabled><span id="enter-text">进入目录</span><span class="arrow" aria-hidden="true"></span></button>
-<p id="status" role="status" aria-live="polite"></p></form>
-<noscript>请开启 JavaScript 后访问目录。</noscript>
-</div></div></main></div>
+<header class="masthead">
+  <span class="brand" role="img" aria-label="SeaMoon"></span>
+  <div class="language"><select id="gate-language" aria-label="语言" autocomplete="off">
+    <option value="zh-CN" lang="zh-CN">中文</option><option value="en" lang="en">English</option><option value="ko" lang="ko">한국어</option><option value="ja" lang="ja">日本語</option>
+  </select></div>
+</header>
+<main aria-labelledby="gate-title">
+  <figure class="scene"><div class="portrait" id="gate-portrait" role="img" aria-label="黑色宽檐帽遮住双眼，银色缎面与指间的戒指在暗处映着微光。"></div></figure>
+  <div class="details">
+    <div class="intro"><div class="moon-rule" aria-hidden="true"></div>
+      <h1 id="gate-title" data-copy="title">海月目录</h1>
+      <p class="subtitle" data-copy="subtitle">输入访问口令，查看作品目录。</p>
+    </div>
+    <div class="access">
+      <form id="gate-form" aria-labelledby="password-label" novalidate>
+        <label id="password-label" data-copy="code" for="access-code">访问口令</label>
+        <div class="field"><span class="lock" aria-hidden="true"></span>
+          <input id="access-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="请输入访问口令" required aria-describedby="status">
+          <button type="button" class="reveal" id="reveal" aria-label="显示口令" aria-controls="access-code" aria-pressed="false"><span class="eye" aria-hidden="true"></span></button>
+        </div>
+        <button type="submit" class="enter" id="enter" disabled><span id="enter-text">进入目录</span><span class="arrow" aria-hidden="true"></span></button>
+        <p id="status" role="status" aria-live="polite"></p>
+      </form>
+      <noscript>请开启 JavaScript 后访问目录。</noscript>
+    </div>
+    <footer class="private" aria-labelledby="private-title">
+      <h2 id="private-title" data-copy="privateTitle">仅供私享 · 请勿外传</h2>
+      <p class="private-copy"><span data-copy="audience">姐姐的作品仅限购买者本人观看，</span>
+        <span data-copy="sharing">禁止转发、搬运及二次售卖。</span>
+        <span data-copy="thanks">请珍惜这份专属，尊重每一份创作。</span></p>
+      <div class="signature" aria-hidden="true"></div>
+    </footer>
+  </div>
+</main>
+</div>
 <script>
 (() => {
   /* StatiCrypt v3.5.4
@@ -595,18 +605,38 @@ exports.init = init;
 
 return exports; })().init(engine);
   const copy = {
-    'zh-CN': ['海月目录','访问口令','进入目录','正在打开…',
-      '口令不正确，请重新输入。','暂时无法加载目录，请重试。','请用支持安全连接的浏览器打开此页。','语言',
-      '请输入访问口令','显示口令','隐藏口令','红月下，银发女王头戴王冠，手执酒杯，双腿交叠坐在王座上。'],
-    en: ['SeaMoon Catalog','Access code','Open catalog','Opening…',
-      'That code is incorrect. Try again.','The catalog could not load. Please try again.','Open this page in a browser that supports secure connections.','Language',
-      'Enter your access code','Show access code','Hide access code','Beneath a crimson moon, the silver-haired queen sits on her throne, legs crossed, a goblet in hand.'],
-    ko: ['해월 작품 목록','접속 암호','작품 목록 열기','여는 중…',
-      '암호가 올바르지 않아요. 다시 입력해 주세요.','목록을 불러올 수 없어요. 다시 시도해 주세요.','보안 연결을 지원하는 브라우저에서 열어 주세요.','언어',
-      '접속 암호를 입력해 주세요','암호 표시','암호 숨기기','붉은 달 아래 왕관을 쓴 은발의 여왕이 잔을 들고 왕좌에 다리를 꼬고 앉아 있다.'],
-    ja: ['海月の作品一覧','閲覧用パスワード','作品一覧を開く','読み込み中…',
-      'パスワードが違います。もう一度入力してください。','作品一覧を読み込めませんでした。もう一度お試しください。','安全な接続に対応するブラウザで開いてください。','言語',
-      'パスワードを入力してください','パスワードを表示','パスワードを隠す','紅い月の下、王冠を戴いた銀髪の女王が杯を手に、脚を組んで玉座に腰掛けている。']
+    'zh-CN': {
+      title: '海月目录', subtitle: '输入访问口令，查看作品目录。', language: '语言',
+      code: '访问口令', placeholder: '请输入访问口令', show: '显示口令', hide: '隐藏口令', enter: '进入目录', opening: '正在打开…',
+      incorrect: '口令不正确，请重新输入。', unavailable: '暂时无法加载目录，请重试。', insecure: '请用支持安全连接的浏览器打开此页。',
+      portrait: '黑色宽檐帽遮住双眼，银色缎面与指间的戒指在暗处映着微光。',
+      privateTitle: '仅供私享 · 请勿外传', audience: '姐姐的作品仅限购买者本人观看，',
+      sharing: '禁止转发、搬运及二次售卖。', thanks: '请珍惜这份专属，尊重每一份创作。'
+    },
+    en: {
+      title: 'SeaMoon Catalog', subtitle: 'Enter your access code to browse the catalog.', language: 'Language',
+      code: 'Access code', placeholder: 'Enter your access code', show: 'Show access code', hide: 'Hide access code', enter: 'Open catalog', opening: 'Opening…',
+      incorrect: 'That code is incorrect. Try again.', unavailable: 'The catalog could not load. Please try again.', insecure: 'Open this page in a browser that supports secure connections.',
+      portrait: 'A wide-brimmed black hat shades her eyes. Silver satin and her rings catch the light.',
+      privateTitle: 'For private viewing only', audience: 'My work is for the purchaser’s personal viewing only.',
+      sharing: 'Please do not forward, repost, or resell it.', thanks: 'Thank you for respecting the care behind each piece.'
+    },
+    ko: {
+      title: '해월 작품 목록', subtitle: '접속 암호를 입력해 작품 목록을 확인하세요.', language: '언어',
+      code: '접속 암호', placeholder: '접속 암호를 입력해 주세요', show: '암호 표시', hide: '암호 숨기기', enter: '작품 목록 열기', opening: '여는 중…',
+      incorrect: '암호가 올바르지 않아요. 다시 입력해 주세요.', unavailable: '목록을 불러올 수 없어요. 다시 시도해 주세요.', insecure: '보안 연결을 지원하는 브라우저에서 열어 주세요.',
+      portrait: '챙이 넓은 검은 모자가 눈을 가리고, 은빛 새틴과 손가락의 반지에 빛이 감돈다.',
+      privateTitle: '개인 감상 전용 · 공유 금지', audience: '작품은 구매자 본인만 감상해 주세요.',
+      sharing: '전달, 무단 재게시 및 재판매를 금합니다.', thanks: '각 작품에 담긴 정성을 소중히 여겨 주세요.'
+    },
+    ja: {
+      title: '海月の作品一覧', subtitle: '閲覧用パスワードを入力して、作品一覧をご覧ください。', language: '言語',
+      code: '閲覧用パスワード', placeholder: '閲覧用パスワードを入力してください', show: 'パスワードを表示', hide: 'パスワードを隠す', enter: '作品一覧を開く', opening: '読み込み中…',
+      incorrect: 'パスワードが違います。もう一度入力してください。', unavailable: '作品一覧を読み込めませんでした。もう一度お試しください。', insecure: '安全な接続に対応するブラウザで開いてください。',
+      portrait: 'つばの広い黒い帽子が目元を隠し、銀色のサテンと指輪がほのかに光っている。',
+      privateTitle: '個人鑑賞用・共有禁止', audience: '作品は購入者ご本人のみご覧いただけます。',
+      sharing: '転送・無断転載・転売はお控えください。', thanks: '一作一作に込めた思いを大切にしていただけたら幸いです。'
+    }
   };
   const find = id => document.getElementById(id);
   const menu = find('gate-language'), form = find('gate-form'), field = find('access-code'), button = find('enter');
@@ -622,19 +652,21 @@ return exports; })().init(engine);
   fitEntry();
   viewport.addEventListener('resize', fitEntry);
   const preference = 'seamoon-catalog-language';
-  let notice = 0, busy = false, packed;
+  const translated = document.querySelectorAll('[data-copy]');
+  let notice = '', busy = false, packed;
   try { const saved = localStorage.getItem(preference); if (Object.hasOwn(copy, saved)) menu.value = saved; } catch {}
   function render() {
     const words = copy[menu.value];
     document.documentElement.lang = menu.value;
-    document.title = words[0];
-    menu.setAttribute('aria-label', words[7]);
-    find('password-label').textContent = words[1]; find('enter-text').textContent = words[busy ? 3 : 2];
-    field.placeholder = words[8];
+    document.title = words.title;
+    for (const element of translated) element.textContent = words[element.dataset.copy];
+    menu.setAttribute('aria-label', words.language);
+    find('enter-text').textContent = busy ? words.opening : words.enter;
+    field.placeholder = words.placeholder;
     const visible = field.type === 'text';
     reveal.setAttribute('aria-pressed', String(visible));
-    reveal.setAttribute('aria-label', words[visible ? 10 : 9]);
-    find('queen-portrait').alt = words[11];
+    reveal.setAttribute('aria-label', visible ? words.hide : words.show);
+    find('gate-portrait').setAttribute('aria-label', words.portrait);
     find('status').textContent = notice ? words[notice] : '';
     button.disabled = busy || !window.crypto?.subtle;
   }
@@ -648,10 +680,10 @@ return exports; })().init(engine);
   });
   field.addEventListener('input', () => {
     if (field.hasAttribute('aria-invalid')) {
-      field.removeAttribute('aria-invalid'); notice = 0; render();
+      field.removeAttribute('aria-invalid'); notice = ''; render();
     }
   });
-  if (!window.crypto?.subtle) notice = 6;
+  if (!window.crypto?.subtle) notice = 'insecure';
   render();
   const bytes = base64 => Uint8Array.from(atob(base64), ch => ch.charCodeAt(0));
   async function load() {
@@ -666,18 +698,18 @@ return exports; })().init(engine);
     event.preventDefault();
     if (busy || !window.crypto?.subtle) return;
     if (!field.value) {
-      notice = 8; field.setAttribute('aria-invalid', 'true'); render(); field.focus();
+      notice = 'placeholder'; field.setAttribute('aria-invalid', 'true'); render(); field.focus();
       return;
     }
     const password = field.value;
-    busy = true; notice = 0; field.removeAttribute('aria-invalid'); render();
+    busy = true; notice = ''; field.removeAttribute('aria-invalid'); render();
     try {
       packed = packed || await load();
       const {header, ciphertext} = packed;
       const hash = await engine.hashPassword(password, header.salt);
       const result = await codec.decode(header.wrappedKey, hash, header.salt, 2);
       if (!result.success) {
-        notice = 4; field.setAttribute('aria-invalid', 'true'); field.focus(); field.select();
+        notice = 'incorrect'; field.setAttribute('aria-invalid', 'true'); field.focus(); field.select();
         return;
       }
       const key = await crypto.subtle.importKey('raw', bytes(result.decoded), 'AES-GCM', false, ['decrypt']);
@@ -698,7 +730,7 @@ return exports; })().init(engine);
       if (location.href !== address) history.replaceState(null, '', address);
       document.write(html);
       document.close();
-    } catch { packed = null; notice = 5; }
+    } catch { packed = null; notice = 'unavailable'; }
     finally { if (form.isConnected) { busy = false; render(); } }
   });
 })();
