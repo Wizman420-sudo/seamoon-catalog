@@ -37,11 +37,12 @@ button, select { -webkit-tap-highlight-color: transparent; }
 @supports (height: 100dvh) { :root { --screen-height: 100dvh; } }
 .backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
 .film-stage { position: absolute; inset: 0; background: var(--ink) url("art-throne.webp") center 35% / cover no-repeat; }
-.film-stage video {
+.film-stage video, .film-stage canvas {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: center 35%; opacity: 0; pointer-events: none;
 }
-.film-stage.has-frame video { opacity: 1; }
+.film-stage.has-frame video, .film-stage.show-frames canvas { opacity: 1; }
+.film-stage [hidden] { display: none; }
 /* The Chinese title in the film is swept away by the queen's hand. */
 html:not([lang="zh-CN"]) .film-stage.opening.has-frame::after {
   content: ""; position: absolute; inset: 0;
@@ -160,7 +161,7 @@ input:focus-visible { outline: none; }
 @media (min-width: 780px) and (min-aspect-ratio: 6/5) {
   .backdrop { background: radial-gradient(ellipse at 32% 50%, #45212b 0, #201319 38%, var(--ink) 73%); }
   .film-stage { right: auto; left: 30%; width: min(58%, 56.2vh); transform: translateX(-50%); background-size: contain; }
-  .film-stage video { object-fit: contain; }
+  .film-stage video, .film-stage canvas { object-fit: contain; }
   .masthead { padding-inline: 5%; min-height: 64px; }
   .panel {
     width: min(43%, 510px); margin: auto 6% auto auto; padding: 12px 0;
@@ -179,9 +180,10 @@ input:focus-visible { outline: none; }
 <div class="shell">
 <div class="backdrop" aria-hidden="true"><div class="film-stage opening" id="film-stage">
 <video id="opening-film" muted loop playsinline webkit-playsinline x5-video-player-type="h5-page" preload="none" disablepictureinpicture disableremoteplayback tabindex="-1"></video>
+<canvas id="opening-frames" width="360" height="640" hidden></canvas>
 </div></div>
 <header class="masthead"><span class="brand" role="img" aria-label="SeaMoon"></span>
-<div class="tools"><button class="motion" type="button" id="motion" aria-controls="opening-film" aria-label="播放背景视频" hidden><span aria-hidden="true"></span></button>
+<div class="tools"><button class="motion" type="button" id="motion" aria-controls="film-stage" aria-label="播放背景视频" hidden><span aria-hidden="true"></span></button>
 <div class="language"><select id="gate-language" aria-label="语言" autocomplete="off">
 <option value="zh-CN" lang="zh-CN">中文</option><option value="en" lang="en">English</option><option value="ko" lang="ko">한국어</option><option value="ja" lang="ja">日本語</option>
 </select></div></div></header>
@@ -598,6 +600,7 @@ return exports; })().init(engine);
   const menu = find('gate-language'), form = find('gate-form'), field = find('access-code'), button = find('enter');
   const reveal = find('reveal');
   const film = find('opening-film'), stage = find('film-stage'), motion = find('motion');
+  const canvas = find('opening-frames');
   const shell = document.querySelector('.shell');
   const viewport = window.visualViewport || window;
   function fitEntry() {
@@ -611,44 +614,111 @@ return exports; })().init(engine);
   const preference = 'seamoon-catalog-language';
   let notice = 0, busy = false, packed;
   try { const saved = localStorage.getItem(preference); if (Object.hasOwn(copy, saved)) menu.value = saved; } catch {}
+  const nativeFilm = 'playsInline' in film && !!film.canPlayType('video/mp4');
+  let useFrames = /MicroMessenger/i.test(navigator.userAgent) || !!window.WeixinJSBridge || !nativeFilm;
+  let wantsFilm = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !navigator.connection?.saveData;
+  let frame = 0, timer, generation = 0;
+  const frameRate = 15, framesPerSheet = 25, sheetCount = 9;
+  const sheets = new Map();
   function labelMotion() {
-    const playing = !film.paused && !film.ended;
+    const playing = wantsFilm && !document.hidden;
     motion.toggleAttribute('data-playing', playing);
     const label = copy[menu.value][playing ? 12 : 11];
     motion.setAttribute('aria-label', label);
     motion.title = label;
   }
-  let wantsFilm = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !navigator.connection?.saveData;
-  async function playFilm() {
-    if (document.hidden || !wantsFilm || motion.hidden) return;
+  // Each sheet holds 25 consecutive frames, laid out five across.
+  function loadSheet(index) {
+    if (!sheets.has(index)) {
+      const loading = new Promise(resolve => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => resolve(null);
+        image.src = 'portal-queen-frames-' + (index + 1) + '.webp';
+      });
+      sheets.set(index, loading);
+    }
+    return sheets.get(index);
+  }
+  async function drawFrame(run) {
+    const started = performance.now();
+    const index = Math.floor(frame / framesPerSheet), tile = frame % framesPerSheet;
+    let sheet = await loadSheet(index);
+    if (!sheet && run === generation) {
+      sheets.delete(index);
+      sheet = await loadSheet(index);
+    }
+    if (run !== generation) return;
+    const ctx = canvas.getContext('2d');
+    if (!sheet || !ctx) {
+      sheets.delete(index);
+      wantsFilm = false;
+      labelMotion();
+      return;
+    }
+    const w = canvas.width, h = canvas.height;
+    ctx.drawImage(sheet, (tile % 5) * w, Math.floor(tile / 5) * h, w, h, 0, 0, w, h);
+    stage.classList.add('show-frames', 'has-frame');
+    stage.classList.toggle('opening', frame < 2.8 * frameRate);
+    if (tile === 0) {
+      const next = (index + 1) % sheetCount;
+      for (const key of sheets.keys()) if (key !== index && key !== next) sheets.delete(key);
+      loadSheet(next);
+    }
+    frame = (frame + 1) % (framesPerSheet * sheetCount);
+    timer = setTimeout(() => drawFrame(run), Math.max(0, 1000 / frameRate - (performance.now() - started)));
+  }
+  function switchToFrames() {
+    if (useFrames) return;
+    useFrames = true;
+    updateMotion();
+  }
+  function updateMotion() {
+    const run = ++generation;
+    clearTimeout(timer);
+    labelMotion();
+    if (useFrames && !film.hidden) {
+      film.hidden = true;
+      film.pause();
+      if (film.hasAttribute('src')) {
+        film.removeAttribute('src');
+        film.load();
+      }
+      canvas.hidden = false;
+    }
+    if (!wantsFilm || document.hidden) {
+      film.pause();
+      return;
+    }
+    if (useFrames) {
+      drawFrame(run);
+      return;
+    }
     if (!film.hasAttribute('src')) film.src = 'portal-queen.mp4';
-    try { await film.play(); } catch { labelMotion(); }
+    // Some embedded browsers leave play() pending without reporting a refusal.
+    if (film.paused || film.readyState < 3) timer = setTimeout(switchToFrames, 4000);
+    film.play()?.catch(() => { if (run === generation) switchToFrames(); });
   }
-  function staticCover() {
-    wantsFilm = false;
-    film.pause();
-    stage.classList.remove('has-frame');
-    motion.hidden = true;
+  function onPageShow(event) {
+    if (event.persisted || !stage.classList.contains('has-frame')) updateMotion();
   }
-  function onVisibility() {
-    if (document.hidden) film.pause();
-    else playFilm();
-  }
-  if ('playsInline' in film && film.canPlayType('video/mp4')) {
-    film.muted = true;
-    motion.hidden = false;
-    film.addEventListener('playing', () => { stage.classList.add('has-frame'); labelMotion(); });
-    film.addEventListener('timeupdate', () => stage.classList.toggle('opening', film.currentTime < 2.8));
-    film.addEventListener('pause', labelMotion);
-    film.addEventListener('error', staticCover);
-    film.addEventListener('webkitbeginfullscreen', () => { staticCover(); film.webkitExitFullscreen?.(); });
-    document.addEventListener('visibilitychange', onVisibility);
-    motion.addEventListener('click', () => {
-      wantsFilm = film.paused;
-      if (wantsFilm) playFilm();
-      else film.pause();
-    });
-  }
+  film.muted = true;
+  film.addEventListener('playing', () => {
+    if (!useFrames) { clearTimeout(timer); stage.classList.add('has-frame'); }
+  });
+  film.addEventListener('timeupdate', () => {
+    if (!useFrames) stage.classList.toggle('opening', film.currentTime < 2.8);
+  });
+  film.addEventListener('error', switchToFrames);
+  film.addEventListener('webkitbeginfullscreen', () => { film.webkitExitFullscreen?.(); switchToFrames(); });
+  motion.hidden = false;
+  motion.addEventListener('click', () => {
+    wantsFilm = !wantsFilm;
+    updateMotion();
+  });
+  document.addEventListener('visibilitychange', updateMotion);
+  document.addEventListener('WeixinJSBridgeReady', switchToFrames, { once: true });
+  window.addEventListener('pageshow', onPageShow);
   function render() {
     const words = copy[menu.value];
     document.documentElement.lang = menu.value;
@@ -678,7 +748,7 @@ return exports; })().init(engine);
   });
   if (!window.crypto?.subtle) notice = 6;
   render();
-  playFilm();
+  updateMotion();
   const bytes = base64 => Uint8Array.from(atob(base64), ch => ch.charCodeAt(0));
   async function load() {
     const response = await fetch('catalog-locked.bin?v=8c398a2dcc40c44f5a05', {credentials:'omit', referrerPolicy:'no-referrer'});
@@ -719,9 +789,13 @@ return exports; })().init(engine);
       });
       const address = location.href;
       field.value = ''; packed = null;
-      document.removeEventListener('visibilitychange', onVisibility);
+      wantsFilm = false;
+      updateMotion();
+      sheets.clear();
+      document.removeEventListener('visibilitychange', updateMotion);
+      document.removeEventListener('WeixinJSBridgeReady', switchToFrames);
+      window.removeEventListener('pageshow', onPageShow);
       viewport.removeEventListener('resize', fitEntry);
-      film.pause();
       document.open();
       if (location.href !== address) history.replaceState(null, '', address);
       document.write(html);
