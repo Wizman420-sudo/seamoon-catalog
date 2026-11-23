@@ -7,14 +7,12 @@
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex,noimageindex">
 <link rel="icon" href="seamoon-mark.webp" type="image/webp">
-<link rel="preload" as="image" href="art-throne.webp" fetchpriority="high">
 <title>SeaMoon 海月 · 目录入口</title>
 <style>
 :root {
   color-scheme: dark;
   --paper: #e9e0d3;
   --ink: #0e0c0f;
-  --art: url("portal-blood-moon.jpg");
   --screen-height: 100vh;
   font-family: Georgia, "Songti SC", STSong, "Noto Serif CJK SC", "Yu Mincho", Batang, serif;
   color: var(--paper);
@@ -37,14 +35,14 @@ button, select { -webkit-tap-highlight-color: transparent; }
 @supports (height: 100dvh) { :root { --screen-height: 100dvh; } }
 .backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
 .film-stage { position: absolute; inset: 0; background: var(--ink) url("art-throne.webp") center 35% / cover no-repeat; }
-.film-stage video, .film-stage canvas {
+.film-stage video, .film-stage picture img {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: center 35%; opacity: 0; pointer-events: none;
 }
-.film-stage.has-frame video, .film-stage.show-frames canvas { opacity: 1; }
+.film-stage.has-frame video, .film-stage.image-ready picture img { opacity: 1; }
 .film-stage [hidden] { display: none; }
 /* The Chinese title in the film is swept away by the queen's hand. */
-html:not([lang="zh-CN"]) .film-stage.opening.has-frame::after {
+html:not([lang="zh-CN"]) .film-stage.opening.has-frame:not(.image-ready)::after {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(transparent 46%, var(--ink) 54%);
 }
@@ -59,11 +57,9 @@ html:not([lang="zh-CN"]) .film-stage.opening.has-frame::after {
   border-bottom: 1px solid #76616a55;
 }
 .brand {
-  flex: none; background-image: var(--art); background-repeat: no-repeat;
+  flex: none; background: url("portal-wordmark.webp") center / contain no-repeat;
   width: clamp(116px, 34.55vw, 188px);
   aspect-ratio: 325 / 75;
-  background-size: 289.5385% auto;
-  background-position: 10.8766% .8766%;
 }
 .language { position: relative; display: flex; align-items: center; }
 .tools { display: flex; align-items: center; gap: .45rem; }
@@ -161,7 +157,7 @@ input:focus-visible { outline: none; }
 @media (min-width: 780px) and (min-aspect-ratio: 6/5) {
   .backdrop { background: radial-gradient(ellipse at 32% 50%, #45212b 0, #201319 38%, var(--ink) 73%); }
   .film-stage { right: auto; left: 30%; width: min(58%, 56.2vh); transform: translateX(-50%); background-size: contain; }
-  .film-stage video, .film-stage canvas { object-fit: contain; }
+  .film-stage video, .film-stage picture img { object-fit: contain; }
   .masthead { padding-inline: 5%; min-height: 64px; }
   .panel {
     width: min(43%, 510px); margin: auto 6% auto auto; padding: 12px 0;
@@ -180,7 +176,6 @@ input:focus-visible { outline: none; }
 <div class="shell">
 <div class="backdrop" aria-hidden="true"><div class="film-stage opening" id="film-stage">
 <video id="opening-film" muted loop playsinline webkit-playsinline x5-video-player-type="h5-page" preload="none" disablepictureinpicture disableremoteplayback tabindex="-1"></video>
-<canvas id="opening-frames" width="360" height="640" hidden></canvas>
 </div></div>
 <header class="masthead"><span class="brand" role="img" aria-label="SeaMoon"></span>
 <div class="tools"><button class="motion" type="button" id="motion" aria-controls="film-stage" aria-label="播放背景视频" hidden><span aria-hidden="true"></span></button>
@@ -600,7 +595,6 @@ return exports; })().init(engine);
   const menu = find('gate-language'), form = find('gate-form'), field = find('access-code'), button = find('enter');
   const reveal = find('reveal');
   const film = find('opening-film'), stage = find('film-stage'), motion = find('motion');
-  const canvas = find('opening-frames');
   const shell = document.querySelector('.shell');
   const viewport = window.visualViewport || window;
   function fitEntry() {
@@ -615,11 +609,11 @@ return exports; })().init(engine);
   let notice = 0, busy = false, packed;
   try { const saved = localStorage.getItem(preference); if (Object.hasOwn(copy, saved)) menu.value = saved; } catch {}
   const nativeFilm = 'playsInline' in film && !!film.canPlayType('video/mp4');
-  let useFrames = /MicroMessenger/i.test(navigator.userAgent) || !!window.WeixinJSBridge || !nativeFilm;
+  const movie = 'portal-queen-v2.mp4';
+  let imageMode = /MicroMessenger/i.test(navigator.userAgent) || !!window.WeixinJSBridge || !nativeFilm;
   let wantsFilm = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !navigator.connection?.saveData;
-  let frame = 0, timer, generation = 0;
-  const frameRate = 15, framesPerSheet = 25, sheetCount = 9;
-  const sheets = new Map();
+  let picture, pictureStarted = 0, pausedAt = null, watchdog, attempt = 0;
+
   function labelMotion() {
     const playing = wantsFilm && !document.hidden;
     motion.toggleAttribute('data-playing', playing);
@@ -627,97 +621,123 @@ return exports; })().init(engine);
     motion.setAttribute('aria-label', label);
     motion.title = label;
   }
-  // Each sheet holds 25 consecutive frames, laid out five across.
-  function loadSheet(index) {
-    if (!sheets.has(index)) {
-      const loading = new Promise(resolve => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = () => resolve(null);
-        image.src = 'portal-queen-frames-' + (index + 1) + '.webp';
-      });
-      sheets.set(index, loading);
-    }
-    return sheets.get(index);
+  function removePicture() {
+    if (picture) picture.remove();
+    picture = null;
+    pictureStarted = 0;
+    stage.classList.remove('image-ready');
   }
-  async function drawFrame(run) {
-    const started = performance.now();
-    const index = Math.floor(frame / framesPerSheet), tile = frame % framesPerSheet;
-    let sheet = await loadSheet(index);
-    if (!sheet && run === generation) {
-      sheets.delete(index);
-      sheet = await loadSheet(index);
+  function showPicture() {
+    const language = menu.value === 'zh-CN' ? 'zh' : 'intl';
+    if (picture?.dataset.language === language) return;
+    removePicture();
+    const view = document.createElement('picture');
+    const img = document.createElement('img');
+    const animation = 'portal-queen-loop' + (language === 'zh' ? '' : '-intl');
+    picture = view;
+    view.dataset.language = language;
+    function source(type, file) {
+      const option = document.createElement('source');
+      option.type = type;
+      option.srcset = file;
+      view.append(option);
     }
-    if (run !== generation) return;
-    const ctx = canvas.getContext('2d');
-    if (!sheet || !ctx) {
-      sheets.delete(index);
+    // WebKit can decode H.264 as an animated image, even when video autoplay is restricted.
+    if (language === 'zh') source('video/mp4', movie);
+    source('image/avif', animation + '.avif');
+    img.alt = '';
+    img.fetchPriority = 'high';
+    img.onload = () => {
+      if (view !== picture) return;
+      pictureStarted = performance.now();
+      stage.classList.add('image-ready');
+    };
+    img.onerror = () => {
+      if (view !== picture) return;
+      const failed = Array.from(view.querySelectorAll('source')).find(option =>
+        new URL(option.srcset, document.baseURI).href === img.currentSrc);
+      if (failed) {
+        failed.remove();
+        return;
+      }
+      removePicture();
       wantsFilm = false;
       labelMotion();
-      return;
-    }
-    const w = canvas.width, h = canvas.height;
-    ctx.drawImage(sheet, (tile % 5) * w, Math.floor(tile / 5) * h, w, h, 0, 0, w, h);
-    stage.classList.add('show-frames', 'has-frame');
-    stage.classList.toggle('opening', frame < 2.8 * frameRate);
-    if (tile === 0) {
-      const next = (index + 1) % sheetCount;
-      for (const key of sheets.keys()) if (key !== index && key !== next) sheets.delete(key);
-      loadSheet(next);
-    }
-    frame = (frame + 1) % (framesPerSheet * sheetCount);
-    timer = setTimeout(() => drawFrame(run), Math.max(0, 1000 / frameRate - (performance.now() - started)));
+    };
+    view.append(img);
+    img.src = animation + '.webp';
+    stage.append(view);
   }
-  function switchToFrames() {
-    if (useFrames) return;
-    useFrames = true;
-    updateMotion();
+  function switchToPicture() {
+    if (!wantsFilm || document.hidden) return;
+    ++attempt;
+    clearTimeout(watchdog);
+    imageMode = true;
+    film.pause();
+    if (film.hasAttribute('src')) {
+      film.removeAttribute('src');
+      film.load();
+    }
+    stage.classList.remove('has-frame');
+    showPicture();
   }
   function updateMotion() {
-    const run = ++generation;
-    clearTimeout(timer);
+    const run = ++attempt;
+    clearTimeout(watchdog);
     labelMotion();
-    if (useFrames && !film.hidden) {
-      film.hidden = true;
-      film.pause();
-      if (film.hasAttribute('src')) {
-        film.removeAttribute('src');
-        film.load();
-      }
-      canvas.hidden = false;
-    }
     if (!wantsFilm || document.hidden) {
       film.pause();
+      removePicture();
       return;
     }
-    if (useFrames) {
-      drawFrame(run);
+    if (imageMode) {
+      switchToPicture();
       return;
     }
-    if (!film.hasAttribute('src')) film.src = 'portal-queen.mp4';
-    // Some embedded browsers leave play() pending without reporting a refusal.
-    if (film.paused || film.readyState < 3) timer = setTimeout(switchToFrames, 4000);
-    film.play()?.catch(() => { if (run === generation) switchToFrames(); });
+    removePicture();
+    if (!film.hasAttribute('src')) film.src = movie;
+    if (film.paused || film.readyState < 3) {
+      watchdog = setTimeout(() => { if (run === attempt) switchToPicture(); }, 4000);
+    }
+    film.play()?.catch(() => { if (run === attempt) switchToPicture(); });
   }
-  function onPageShow(event) {
-    if (event.persisted || !stage.classList.contains('has-frame')) updateMotion();
+  function showNativeFrame() {
+    if (picture || !film.hasAttribute('src')) return;
+    stage.classList.toggle('opening', film.currentTime < 2.8);
+    stage.classList.add('has-frame');
   }
   film.muted = true;
-  film.addEventListener('playing', () => {
-    if (!useFrames) { clearTimeout(timer); stage.classList.add('has-frame'); }
+  film.addEventListener('playing', () => { clearTimeout(watchdog); showNativeFrame(); });
+  film.addEventListener('timeupdate', showNativeFrame);
+  film.addEventListener('seeked', showNativeFrame);
+  film.addEventListener('loadedmetadata', () => {
+    if (pausedAt === null) return;
+    film.currentTime = pausedAt % (film.duration || 15);
+    pausedAt = null;
   });
-  film.addEventListener('timeupdate', () => {
-    if (!useFrames) stage.classList.toggle('opening', film.currentTime < 2.8);
-  });
-  film.addEventListener('error', switchToFrames);
-  film.addEventListener('webkitbeginfullscreen', () => { film.webkitExitFullscreen?.(); switchToFrames(); });
+  film.addEventListener('error', () => { if (!imageMode) switchToPicture(); });
+  film.addEventListener('webkitbeginfullscreen', () => { film.webkitExitFullscreen?.(); switchToPicture(); });
   motion.hidden = false;
   motion.addEventListener('click', () => {
     wantsFilm = !wantsFilm;
+    if (!wantsFilm && pictureStarted && nativeFilm) {
+      pausedAt = (performance.now() - pictureStarted) / 1000;
+      film.src = movie;
+      film.preload = 'auto';
+    } else if (wantsFilm && nativeFilm) {
+      // A deliberate tap also unlocks native playback in embedded browsers.
+      imageMode = false;
+    }
     updateMotion();
   });
+  function onBridgeReady() {
+    if (film.paused && wantsFilm) switchToPicture();
+  }
+  function onPageShow(event) {
+    if (event.persisted) updateMotion();
+  }
   document.addEventListener('visibilitychange', updateMotion);
-  document.addEventListener('WeixinJSBridgeReady', switchToFrames, { once: true });
+  document.addEventListener('WeixinJSBridgeReady', onBridgeReady, { once: true });
   window.addEventListener('pageshow', onPageShow);
   function render() {
     const words = copy[menu.value];
@@ -736,6 +756,7 @@ return exports; })().init(engine);
   menu.addEventListener('change', () => {
     try { localStorage.setItem(preference, menu.value); } catch {}
     render();
+    if (picture) showPicture();
   });
   reveal.addEventListener('click', () => {
     field.type = field.type === 'password' ? 'text' : 'password';
@@ -791,9 +812,8 @@ return exports; })().init(engine);
       field.value = ''; packed = null;
       wantsFilm = false;
       updateMotion();
-      sheets.clear();
       document.removeEventListener('visibilitychange', updateMotion);
-      document.removeEventListener('WeixinJSBridgeReady', switchToFrames);
+      document.removeEventListener('WeixinJSBridgeReady', onBridgeReady);
       window.removeEventListener('pageshow', onPageShow);
       viewport.removeEventListener('resize', fitEntry);
       document.open();
