@@ -24,27 +24,17 @@ button, input, select { font: inherit; color: inherit; }
 button, select { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 2px solid #e6c3b2; outline-offset: 3px; }
 .shell {
-  position: relative;
-  isolation: isolate;
+  position: relative; isolation: isolate;
   height: var(--visible-height, var(--screen-height));
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  background: var(--ink);
+  background: radial-gradient(ellipse at 50% 25%, #371922 0, #1c1017 46%, var(--ink) 80%);
 }
 @supports (height: 100dvh) { :root { --screen-height: 100dvh; } }
-.backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-.film-stage { position: absolute; inset: 0; background: var(--ink) url("art-throne.webp") center 35% / cover no-repeat; }
-.film-stage video, .film-stage picture img {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; object-position: center 35%; opacity: 0; pointer-events: none;
-}
-.film-stage.has-frame video, .film-stage.image-ready picture img { opacity: 1; }
-.film-stage [hidden] { display: none; }
-/* The Chinese title in the film is swept away by the queen's hand. */
-html:not([lang="zh-CN"]) .film-stage.opening.has-frame:not(.image-ready)::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(transparent 46%, var(--ink) 54%);
+.shell::before {
+  content: ""; position: absolute; z-index: -1; inset: -28px; pointer-events: none;
+  background: url("art-throne-thumb.webp") center 38% / cover no-repeat;
+  opacity: .23; filter: blur(24px);
 }
 .masthead {
   position: relative; z-index: 2; flex: none;
@@ -62,20 +52,6 @@ html:not([lang="zh-CN"]) .film-stage.opening.has-frame:not(.image-ready)::after 
   aspect-ratio: 325 / 75;
 }
 .language { position: relative; display: flex; align-items: center; }
-.tools { display: flex; align-items: center; gap: .45rem; }
-.motion {
-  width: 44px; height: 44px; display: grid; place-items: center;
-  border: 0; border-radius: 50%; background: transparent; cursor: pointer;
-}
-.motion[hidden] { display: none; }
-.motion span {
-  width: 0; height: 0; margin-left: 2px;
-  border: solid transparent; border-width: 6px 0 6px 9px; border-left-color: currentColor;
-}
-.motion[data-playing] span {
-  width: 10px; height: 12px; margin: 0;
-  border: solid currentColor; border-width: 0 3px;
-}
 .language::after {
   content: ""; position: absolute; right: 2px; top: calc(50% - 5px);
   width: 8px; height: 8px;
@@ -90,18 +66,46 @@ select {
 }
 option { color: var(--paper); background: var(--ink); }
 main {
-  position: relative; z-index: 1; flex: 1; min-height: 0;
-  display: flex; flex-direction: column; overflow: auto; overscroll-behavior: contain;
+  min-height: 0; min-width: 0; display: grid;
+  grid-template-rows: minmax(0, 1fr) auto; overflow: auto;
+}
+.portrait-stage {
+  min-width: 0; min-height: 0; overflow: hidden;
+  display: flex; justify-content: center;
+}
+.portrait-mat {
+  position: relative; height: 100%; max-width: 100%; aspect-ratio: 9 / 16;
+}
+.portrait {
+  display: block; width: 100%; height: 100%; min-width: 0; min-height: 0;
+  object-fit: contain; object-position: center;
+}
+/* Let a little of the outer throne and roses carry into the margins. */
+@supports ((mask-image: linear-gradient(black, transparent)) or (-webkit-mask-image: linear-gradient(black, transparent))) {
+  .portrait-mat::before, .portrait-mat::after {
+    content: ""; position: absolute; top: 0; width: 100%; height: 100%;
+    background: url("art-throne.webp") center / contain no-repeat;
+    transform: scaleX(-1); pointer-events: none;
+    -webkit-mask-image: var(--edge); mask-image: var(--edge);
+  }
+  .portrait-mat::before { right: 100%; --edge: linear-gradient(to right, black 3%, transparent 18%); }
+  .portrait-mat::after { left: 100%; --edge: linear-gradient(to left, black 3%, transparent 18%); }
 }
 .panel {
-  position: relative; flex: none; width: 100%; margin-top: auto;
-  padding: clamp(22px, 5vh, 48px) 0 max(clamp(24px, 6vh, 58px), env(safe-area-inset-bottom, 0px));
-  background: linear-gradient(transparent, #100c1099 30%, #100c10dc 80%, #100c10f2);
+  position: relative;
+  padding: 12px max(6%, env(safe-area-inset-right, 0px)) max(14px, env(safe-area-inset-bottom, 0px)) max(6%, env(safe-area-inset-left, 0px));
+  background: linear-gradient(180deg, #100d10e8, #100c10);
 }
-.access {
-  width: min(100%, 580px); margin-inline: auto;
-  padding: 0 max(7.1%, env(safe-area-inset-right, 0px)) 0 max(7.1%, env(safe-area-inset-left, 0px));
+.panel::before {
+  content: ""; position: absolute; inset: 0 5% auto; height: 1px;
+  background: linear-gradient(90deg, transparent, #927979 37%, #b8a28c 50%, #927979 63%, transparent);
 }
+.panel::after {
+  content: ""; position: absolute; top: -3px; left: 50%; width: 5px; height: 5px;
+  transform: translateX(-50%) rotate(45deg); border: 1px solid #be9b88;
+  background: #782638; pointer-events: none;
+}
+.access { width: min(100%, 440px); margin: 0 auto; }
 form { margin: 0; }
 label { display: block; margin: 0 0 .5em; color: #f4e5db; text-shadow: 0 1px 4px #000; font-size: clamp(14px, 3.5vw, 18px); letter-spacing: .10em; }
 .field {
@@ -141,7 +145,7 @@ input:focus-visible { outline: none; }
 }
 .enter {
   display: flex; align-items: center; justify-content: center; gap: .9em;
-  margin: clamp(14px, 4vw, 24px) 0 0; width: 100%; min-height: clamp(46px, 10.4vw, 59px);
+  margin: 10px 0 0; width: 100%; min-height: clamp(46px, 10.4vw, 59px);
   padding: .4em 1em; border: 1px solid #ad988d; border-radius: 7px;
   background: radial-gradient(ellipse at 58% 0%, #86203270, transparent 62%),
               linear-gradient(#68313a, #430a15 13%, #310911 52%, #24090e);
@@ -154,35 +158,48 @@ input:focus-visible { outline: none; }
 .arrow::after { content: ""; position: absolute; right: 0; top: -3px; width: 6px; height: 6px; border: solid currentColor; border-width: 1px 1px 0 0; transform: rotate(45deg); }
 #status { margin: 0; color: #f2b9bd; font-size: .92rem; line-height: 1.55; }
 #status:not(:empty) { margin-top: .65rem; }
-@media (min-width: 780px) and (min-aspect-ratio: 6/5) {
-  .backdrop { background: radial-gradient(ellipse at 32% 50%, #45212b 0, #201319 38%, var(--ink) 73%); }
-  .film-stage { right: auto; left: 30%; width: min(58%, 56.2vh); transform: translateX(-50%); background-size: contain; }
-  .film-stage video, .film-stage picture img { object-fit: contain; }
-  .masthead { padding-inline: 5%; min-height: 64px; }
-  .panel {
-    width: min(43%, 510px); margin: auto 6% auto auto; padding: 12px 0;
-    background: radial-gradient(ellipse, #20151acd, #120e12a8 55%, transparent 74%);
-  }
-  .access { padding-inline: 6%; }
+/* On shorter phones, put the two controls on one line to give the portrait more height. */
+@media (min-aspect-ratio: 12/25) and (max-width: 599px) {
+  form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 9px; }
+  label, #status { grid-column: 1 / -1; margin: 0; }
+  .enter { margin: 0; min-height: 46px; gap: .55em; letter-spacing: .04em; padding-inline: .75em; }
+  .arrow { width: 13px; }
+  #status:empty { display: none; }
+  #status:not(:empty) { margin-top: 0; }
 }
-.shell.compact .masthead { min-height: 36px; }
-.shell.compact .panel { background: linear-gradient(transparent, #100c10ec 25%); padding-block: 8px max(5px, env(safe-area-inset-bottom, 0px)); }
-.shell.compact .enter { margin-top: 5px; }
-.shell.compact label { margin: 0 0 2px; }
-.shell.compact input, .shell.compact .enter { height: 44px; min-height: 44px; }
+@media (max-width: 389px) {
+  html:not([lang="zh-CN"]) form { grid-template-columns: minmax(0, 1fr); }
+}
+/* Keep the whole portrait tall on wider windows, with the form beside it. */
+@media (min-width: 600px) and (min-aspect-ratio: 1/1) {
+  .masthead { padding-inline: max(5%, env(safe-area-inset-left, 0px)) max(5%, env(safe-area-inset-right, 0px)); }
+  main {
+    width: min(100%, 1180px); margin-inline: auto;
+    grid-template: minmax(0, 1fr) / minmax(0, 1.25fr) minmax(0, 1fr);
+    padding-inline: max(20px, env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-right, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .panel {
+    align-self: center; width: min(94%, 460px); justify-self: center;
+    padding: clamp(22px, 4vh, 42px) clamp(15px, 4vw, 44px);
+    background: radial-gradient(ellipse, #170d13dd, #120d1270 70%, transparent);
+  }
+  .panel::before { left: 0; right: 0; }
+}
+.shell.compact .panel { padding-block: 6px max(6px, env(safe-area-inset-bottom, 0px)); }
+.shell.compact .enter { min-height: 44px; }
 </style>
 </head>
 <body>
 <div class="shell">
-<div class="backdrop" aria-hidden="true"><div class="film-stage opening" id="film-stage">
-<video id="opening-film" muted loop playsinline webkit-playsinline x5-video-player-type="h5-page" preload="none" disablepictureinpicture disableremoteplayback tabindex="-1"></video>
-</div></div>
 <header class="masthead"><span class="brand" role="img" aria-label="SeaMoon"></span>
-<div class="tools"><button class="motion" type="button" id="motion" aria-controls="film-stage" aria-label="播放背景视频" hidden><span aria-hidden="true"></span></button>
 <div class="language"><select id="gate-language" aria-label="语言" autocomplete="off">
 <option value="zh-CN" lang="zh-CN">中文</option><option value="en" lang="en">English</option><option value="ko" lang="ko">한국어</option><option value="ja" lang="ja">日本語</option>
-</select></div></div></header>
-<main><div class="panel"><div class="access">
+</select></div></header>
+<main><div class="portrait-stage"><div class="portrait-mat">
+<img class="portrait" id="queen-portrait" src="art-throne.webp" width="936" height="1664" fetchpriority="high" alt="红月下，银发女王头戴王冠，手执酒杯，双腿交叠坐在王座上。">
+</div></div>
+<div class="panel"><div class="access">
 <form id="gate-form" aria-labelledby="password-label" novalidate><label id="password-label" for="access-code">访问口令</label>
 <div class="field"><span class="lock" aria-hidden="true"></span>
 <input id="access-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="请输入访问口令" required aria-describedby="status">
@@ -580,21 +597,20 @@ return exports; })().init(engine);
   const copy = {
     'zh-CN': ['海月目录','访问口令','进入目录','正在打开…',
       '口令不正确，请重新输入。','暂时无法加载目录，请重试。','请用支持安全连接的浏览器打开此页。','语言',
-      '请输入访问口令','显示口令','隐藏口令','播放背景视频','暂停背景视频'],
+      '请输入访问口令','显示口令','隐藏口令','红月下，银发女王头戴王冠，手执酒杯，双腿交叠坐在王座上。'],
     en: ['SeaMoon Catalog','Access code','Open catalog','Opening…',
       'That code is incorrect. Try again.','The catalog could not load. Please try again.','Open this page in a browser that supports secure connections.','Language',
-      'Enter your access code','Show access code','Hide access code','Play background video','Pause background video'],
+      'Enter your access code','Show access code','Hide access code','Beneath a crimson moon, the silver-haired queen sits on her throne, legs crossed, a goblet in hand.'],
     ko: ['해월 작품 목록','접속 암호','작품 목록 열기','여는 중…',
       '암호가 올바르지 않아요. 다시 입력해 주세요.','목록을 불러올 수 없어요. 다시 시도해 주세요.','보안 연결을 지원하는 브라우저에서 열어 주세요.','언어',
-      '접속 암호를 입력해 주세요','암호 표시','암호 숨기기','배경 영상 재생','배경 영상 일시 정지'],
+      '접속 암호를 입력해 주세요','암호 표시','암호 숨기기','붉은 달 아래 왕관을 쓴 은발의 여왕이 잔을 들고 왕좌에 다리를 꼬고 앉아 있다.'],
     ja: ['海月の作品一覧','閲覧用パスワード','作品一覧を開く','読み込み中…',
       'パスワードが違います。もう一度入力してください。','作品一覧を読み込めませんでした。もう一度お試しください。','安全な接続に対応するブラウザで開いてください。','言語',
-      'パスワードを入力してください','パスワードを表示','パスワードを隠す','背景動画を再生','背景動画を一時停止']
+      'パスワードを入力してください','パスワードを表示','パスワードを隠す','紅い月の下、王冠を戴いた銀髪の女王が杯を手に、脚を組んで玉座に腰掛けている。']
   };
   const find = id => document.getElementById(id);
   const menu = find('gate-language'), form = find('gate-form'), field = find('access-code'), button = find('enter');
   const reveal = find('reveal');
-  const film = find('opening-film'), stage = find('film-stage'), motion = find('motion');
   const shell = document.querySelector('.shell');
   const viewport = window.visualViewport || window;
   function fitEntry() {
@@ -608,137 +624,6 @@ return exports; })().init(engine);
   const preference = 'seamoon-catalog-language';
   let notice = 0, busy = false, packed;
   try { const saved = localStorage.getItem(preference); if (Object.hasOwn(copy, saved)) menu.value = saved; } catch {}
-  const nativeFilm = 'playsInline' in film && !!film.canPlayType('video/mp4');
-  const movie = 'portal-queen-v2.mp4';
-  let imageMode = /MicroMessenger/i.test(navigator.userAgent) || !!window.WeixinJSBridge || !nativeFilm;
-  let wantsFilm = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !navigator.connection?.saveData;
-  let picture, pictureStarted = 0, pausedAt = null, watchdog, attempt = 0;
-
-  function labelMotion() {
-    const playing = wantsFilm && !document.hidden;
-    motion.toggleAttribute('data-playing', playing);
-    const label = copy[menu.value][playing ? 12 : 11];
-    motion.setAttribute('aria-label', label);
-    motion.title = label;
-  }
-  function removePicture() {
-    if (picture) picture.remove();
-    picture = null;
-    pictureStarted = 0;
-    stage.classList.remove('image-ready');
-  }
-  function showPicture() {
-    const language = menu.value === 'zh-CN' ? 'zh' : 'intl';
-    if (picture?.dataset.language === language) return;
-    removePicture();
-    const view = document.createElement('picture');
-    const img = document.createElement('img');
-    const animation = 'portal-queen-loop' + (language === 'zh' ? '' : '-intl');
-    picture = view;
-    view.dataset.language = language;
-    function source(type, file) {
-      const option = document.createElement('source');
-      option.type = type;
-      option.srcset = file;
-      view.append(option);
-    }
-    // WebKit can decode H.264 as an animated image, even when video autoplay is restricted.
-    if (language === 'zh') source('video/mp4', movie);
-    source('image/avif', animation + '.avif');
-    img.alt = '';
-    img.fetchPriority = 'high';
-    img.onload = () => {
-      if (view !== picture) return;
-      pictureStarted = performance.now();
-      stage.classList.add('image-ready');
-    };
-    img.onerror = () => {
-      if (view !== picture) return;
-      const failed = Array.from(view.querySelectorAll('source')).find(option =>
-        new URL(option.srcset, document.baseURI).href === img.currentSrc);
-      if (failed) {
-        failed.remove();
-        return;
-      }
-      removePicture();
-      wantsFilm = false;
-      labelMotion();
-    };
-    view.append(img);
-    img.src = animation + '.webp';
-    stage.append(view);
-  }
-  function switchToPicture() {
-    if (!wantsFilm || document.hidden) return;
-    ++attempt;
-    clearTimeout(watchdog);
-    imageMode = true;
-    film.pause();
-    if (film.hasAttribute('src')) {
-      film.removeAttribute('src');
-      film.load();
-    }
-    stage.classList.remove('has-frame');
-    showPicture();
-  }
-  function updateMotion() {
-    const run = ++attempt;
-    clearTimeout(watchdog);
-    labelMotion();
-    if (!wantsFilm || document.hidden) {
-      film.pause();
-      removePicture();
-      return;
-    }
-    if (imageMode) {
-      switchToPicture();
-      return;
-    }
-    removePicture();
-    if (!film.hasAttribute('src')) film.src = movie;
-    if (film.paused || film.readyState < 3) {
-      watchdog = setTimeout(() => { if (run === attempt) switchToPicture(); }, 4000);
-    }
-    film.play()?.catch(() => { if (run === attempt) switchToPicture(); });
-  }
-  function showNativeFrame() {
-    if (picture || !film.hasAttribute('src')) return;
-    stage.classList.toggle('opening', film.currentTime < 2.8);
-    stage.classList.add('has-frame');
-  }
-  film.muted = true;
-  film.addEventListener('playing', () => { clearTimeout(watchdog); showNativeFrame(); });
-  film.addEventListener('timeupdate', showNativeFrame);
-  film.addEventListener('seeked', showNativeFrame);
-  film.addEventListener('loadedmetadata', () => {
-    if (pausedAt === null) return;
-    film.currentTime = pausedAt % (film.duration || 15);
-    pausedAt = null;
-  });
-  film.addEventListener('error', () => { if (!imageMode) switchToPicture(); });
-  film.addEventListener('webkitbeginfullscreen', () => { film.webkitExitFullscreen?.(); switchToPicture(); });
-  motion.hidden = false;
-  motion.addEventListener('click', () => {
-    wantsFilm = !wantsFilm;
-    if (!wantsFilm && pictureStarted && nativeFilm) {
-      pausedAt = (performance.now() - pictureStarted) / 1000;
-      film.src = movie;
-      film.preload = 'auto';
-    } else if (wantsFilm && nativeFilm) {
-      // A deliberate tap also unlocks native playback in embedded browsers.
-      imageMode = false;
-    }
-    updateMotion();
-  });
-  function onBridgeReady() {
-    if (film.paused && wantsFilm) switchToPicture();
-  }
-  function onPageShow(event) {
-    if (event.persisted) updateMotion();
-  }
-  document.addEventListener('visibilitychange', updateMotion);
-  document.addEventListener('WeixinJSBridgeReady', onBridgeReady, { once: true });
-  window.addEventListener('pageshow', onPageShow);
   function render() {
     const words = copy[menu.value];
     document.documentElement.lang = menu.value;
@@ -749,14 +634,13 @@ return exports; })().init(engine);
     const visible = field.type === 'text';
     reveal.setAttribute('aria-pressed', String(visible));
     reveal.setAttribute('aria-label', words[visible ? 10 : 9]);
-    labelMotion();
+    find('queen-portrait').alt = words[11];
     find('status').textContent = notice ? words[notice] : '';
     button.disabled = busy || !window.crypto?.subtle;
   }
   menu.addEventListener('change', () => {
     try { localStorage.setItem(preference, menu.value); } catch {}
     render();
-    if (picture) showPicture();
   });
   reveal.addEventListener('click', () => {
     field.type = field.type === 'password' ? 'text' : 'password';
@@ -769,7 +653,6 @@ return exports; })().init(engine);
   });
   if (!window.crypto?.subtle) notice = 6;
   render();
-  updateMotion();
   const bytes = base64 => Uint8Array.from(atob(base64), ch => ch.charCodeAt(0));
   async function load() {
     const response = await fetch('catalog-locked.bin?v=8c398a2dcc40c44f5a05', {credentials:'omit', referrerPolicy:'no-referrer'});
@@ -810,11 +693,6 @@ return exports; })().init(engine);
       });
       const address = location.href;
       field.value = ''; packed = null;
-      wantsFilm = false;
-      updateMotion();
-      document.removeEventListener('visibilitychange', updateMotion);
-      document.removeEventListener('WeixinJSBridgeReady', onBridgeReady);
-      window.removeEventListener('pageshow', onPageShow);
       viewport.removeEventListener('resize', fitEntry);
       document.open();
       if (location.href !== address) history.replaceState(null, '', address);
