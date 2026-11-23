@@ -3,52 +3,181 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#120e14">
+<meta name="theme-color" content="#0e0c0f">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex,noimageindex">
 <link rel="icon" href="seamoon-mark.webp" type="image/webp">
+<link rel="preload" as="image" href="portal-blood-moon.jpg" fetchpriority="high">
 <title>SeaMoon 海月 · 目录入口</title>
 <style>
-@font-face{font-family:SeaMoon;src:url("UnifrakturMaguntia-Book.ttf") format("truetype");font-display:swap}
-*{box-sizing:border-box}
-:root{color-scheme:dark;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#f9f1ee;background:#120e14}
-body{margin:0;min-height:100vh;min-height:100svh;background:radial-gradient(ellipse at 40% 55%,#271820 0,transparent 64%)}
-header{height:72px;border-bottom:1px solid #48343d;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,6vw,90px)}
-.brand{display:flex;align-items:center;gap:.6rem;font:2rem/1 SeaMoon,Georgia,serif}.brand img{border-radius:25%;width:30px;height:30px}
-select,button,input{font:inherit}select{color:#e6cbd4;background:#21171f;border:1px solid #67505c;border-radius:5px;min-height:40px;padding:0 .6rem}
-main{min-height:calc(100svh - 72px);display:grid;place-items:center;padding:32px 20px}
-.entry{width:min(830px,100%);display:grid;grid-template-columns:.88fr 1.12fr;border:1px solid #674753;box-shadow:0 22px 65px #0b080c80;background:#1a131a}
-.portrait{margin:0;position:relative;min-height:410px;background:#211319 url("art-throne.webp") center 32% / cover no-repeat;border-right:1px solid #674753}
-.portrait::after{content:"";position:absolute;inset:9px;border:1px solid #d6adab60;pointer-events:none}
-.panel{align-self:center;padding:clamp(26px,4.5vw,62px)}
-h1{font-family:Georgia,"Songti SC","Noto Serif CJK SC",serif;font-size:clamp(2rem,4vw,2.85rem);line-height:1.15;letter-spacing:.015em;font-weight:500;margin:0 0 .7rem}
-.intro{color:#d6bdc6;line-height:1.6;margin:0 0 2rem}
-label{display:block;font-size:.9rem;margin:0 0 .5rem;color:#f0dde1}
-input{width:100%;height:47px;padding:0 .8rem;background:#100d12;border:1px solid #745461;border-radius:4px;color:#fff;font-size:16px}
-button{display:block;width:100%;min-height:46px;margin:.85rem 0 0;border:1px solid #e2b8c6;background:#e4bbc9;color:#28121d;border-radius:4px;font-weight:650;cursor:pointer}
-button:hover{background:#efcdda}button:disabled{opacity:.65;cursor:wait}
-:focus-visible{outline:2px solid #f5cade;outline-offset:3px}
-#status{font-size:.88rem;line-height:1.5;min-height:1.5em;margin:.65rem 0 0;color:#ffbbce}
-@media(max-width:600px){
- header{height:58px}.brand{font-size:1.7rem}.brand img{width:26px;height:26px}
- main{min-height:calc(100svh - 58px);padding:22px 16px}
- .entry{grid-template-columns:1fr;max-width:410px}.portrait{min-height:0;height:clamp(125px,23svh,220px);border:0;border-bottom:1px solid #674753;background-position:50% 23%}
- .panel{padding:25px 23px 18px}.intro{margin-bottom:1.2rem}
+:root {
+  color-scheme: dark;
+  --paper: #e9e0d3;
+  --ink: #0e0c0f;
+  --art: url("portal-blood-moon.jpg");
+  font-family: Georgia, "Songti SC", STSong, "Noto Serif CJK SC", "Yu Mincho", Batang, serif;
+  color: var(--paper);
+  background: var(--ink);
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+button, select { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid #e6c3b2; outline-offset: 3px; }
+.shell {
+  width: min(100%, 640px);
+  margin: auto;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ink);
+}
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: env(safe-area-inset-top, 0px) max(5.8%, env(safe-area-inset-right, 0px)) 0 max(7.1%, env(safe-area-inset-left, 0px));
+  min-height: clamp(44px, 10vw, 66px);
+  background: #0d0b0e;
+}
+/* The same 941 × 1672 artwork supplies the wordmark, portrait, ruby and roses. */
+.brand, .portrait, .jewel, .roses {
+  flex: none;
+  background-image: var(--art);
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
+.brand {
+  width: clamp(116px, 34.55vw, 188px);
+  aspect-ratio: 325 / 75;
+  background-size: 289.5385% auto;
+  background-position: 10.8766% .8766%;
+}
+.language { position: relative; display: flex; align-items: center; }
+.language::after {
+  content: ""; position: absolute; right: 2px; top: calc(50% - 5px);
+  width: 8px; height: 8px;
+  border: solid #d6cbbd; border-width: 0 1px 1px 0;
+  transform: rotate(45deg); pointer-events: none;
+}
+select {
+  -webkit-appearance: none; appearance: none;
+  border: 0; border-radius: 2px; background: transparent; cursor: pointer;
+  min-height: 44px; max-width: 9em; padding: 0 21px 0 5px;
+  font-size: clamp(16px, 3.8vw, 20px); text-align: right; text-align-last: right;
+}
+option { color: var(--paper); background: var(--ink); }
+main, .panel { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.portrait { aspect-ratio: 941 / 793; background-position: center 10.2389%; }
+.panel { background: linear-gradient(#120e10, #100d10 55%, var(--ink)); }
+.jewel { aspect-ratio: 941 / 75; background-position: center 55.2912%; }
+.access { padding: 0 max(7.1%, env(safe-area-inset-right, 0px)) 0 max(7.1%, env(safe-area-inset-left, 0px)); }
+h1, .intro { text-align: center; text-wrap: balance; }
+h1 {
+  color: #e9decf; margin: 0; font-size: clamp(30px, 8.85vw, 51px);
+  line-height: 1.3; font-weight: 500; letter-spacing: .22em; text-indent: .22em;
+}
+.intro {
+  margin: .30em 0 0; color: #c4b9ae;
+  font-size: clamp(13px, 3.45vw, 18px); line-height: 1.55; letter-spacing: .10em;
+}
+:lang(en) h1, :lang(ko) h1, :lang(ja) h1 { letter-spacing: .035em; text-indent: 0; }
+:lang(en) .intro, :lang(ko) .intro { letter-spacing: .02em; }
+form { margin: clamp(14px, 3.7vw, 24px) 0 0; }
+label { display: block; margin: 0 0 .5em; font-size: clamp(14px, 3.5vw, 18px); letter-spacing: .10em; }
+.field {
+  display: flex; align-items: center; position: relative; min-width: 0;
+  border: 1px solid #a99b8e; border-radius: 6px; background: #110f12;
+  box-shadow: inset 0 0 0 1px #45383c;
+}
+.field:focus-within { outline: 1px solid #e7c4b3; outline-offset: 1px; }
+input {
+  min-width: 0; flex: 1; height: clamp(44px, 9.4vw, 54px); border: 0; outline: none;
+  font-size: 16px; background: transparent; padding: 0 0 0 12px; letter-spacing: .035em;
+}
+input::placeholder { color: #afa39e; opacity: 1; }
+input:focus-visible { outline: none; }
+.lock {
+  position: relative; flex: none; margin: 5px 0 0 15px; width: 14px; height: 11px;
+  border: 1px solid #cec2b5; border-radius: 2px;
+}
+.lock::before {
+  content: ""; position: absolute; width: 8px; height: 7px;
+  left: 1px; bottom: 9px; border: 1px solid #cec2b5; border-bottom: 0;
+  border-radius: 7px 7px 0 0;
+}
+.reveal {
+  position: relative; display: grid; place-items: center;
+  border: 0; border-radius: 4px; width: 44px; min-height: 44px; flex: none;
+  background: transparent; cursor: pointer;
+}
+.reveal .eye {
+  width: 17px; height: 17px; border: 1.3px solid currentColor; border-radius: 78% 12%;
+  transform: rotate(45deg); display: grid; place-items: center;
+}
+.eye::before { content: ""; width: 5px; height: 5px; border: 1px solid currentColor; border-radius: 50%; }
+.reveal[aria-pressed="true"]::after {
+  content: ""; position: absolute; width: 21px; height: 1px;
+  background: currentColor; box-shadow: 0 -1px #110f12; transform: rotate(-40deg);
+}
+.enter {
+  display: flex; align-items: center; justify-content: center; gap: .9em;
+  margin: clamp(14px, 4vw, 24px) 0 0; width: 100%; min-height: clamp(46px, 10.4vw, 59px);
+  padding: .4em 1em; border: 1px solid #ad988d; border-radius: 7px;
+  background: radial-gradient(ellipse at 58% 0%, #86203270, transparent 62%),
+              linear-gradient(#68313a, #430a15 13%, #310911 52%, #24090e);
+  box-shadow: inset 0 0 0 2px #251114, inset 0 3px 7px #ba6a6b55, 0 3px 8px #0008;
+  font-size: clamp(17px, 4.1vw, 23px); letter-spacing: .10em; cursor: pointer;
+}
+.enter:disabled { opacity: .66; cursor: wait; }
+@media (hover:hover) { .enter:hover:enabled { filter: brightness(1.16); } }
+.arrow { width: 19px; height: 1px; background: currentColor; position: relative; }
+.arrow::after { content: ""; position: absolute; right: 0; top: -3px; width: 6px; height: 6px; border: solid currentColor; border-width: 1px 1px 0 0; transform: rotate(45deg); }
+#status { margin: 0; color: #f2b9bd; font-size: .92rem; line-height: 1.55; }
+#status:not(:empty) { margin-top: .65rem; }
+.roses {
+  width: 100%; aspect-ratio: 941 / 227; margin-top: auto;
+  background-position: center bottom;
+}
+.shell::after { content: ""; height: env(safe-area-inset-bottom, 0px); }
+@media (max-width: 640px) and (max-aspect-ratio: 1/2) {
+  .access { padding-top: 2svh; }
+  form { margin-top: 3.4svh; }
+  .enter { margin-top: 2.8svh; }
+}
+@media (min-width: 780px) and (min-aspect-ratio: 6/5) {
+  body { background: radial-gradient(ellipse at 30% 46%, #281219, var(--ink) 75%); }
+  .shell { width: min(100%, 1320px); background: transparent; }
+  .masthead { padding-inline: 5%; min-height: 74px; border-bottom: 1px solid #534447; }
+  main {
+    display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr);
+    align-items: center; gap: clamp(32px, 5vw, 74px); padding: 32px 5%;
+  }
+  .portrait { box-shadow: 0 0 0 1px #4c3e42, 0 12px 44px #07050966; }
+  .panel { flex: none; padding-top: 12px; }
+  .access { padding-inline: 7%; }
+  .roses { margin-top: 12px; }
 }
 </style>
 </head>
 <body>
-<header><div class="brand"><img src="seamoon-mark.webp" alt=""><span translate="no">SeaMoon</span></div>
-<select id="gate-language" aria-label="语言" autocomplete="off">
+<div class="shell">
+<header class="masthead"><span class="brand" role="img" aria-label="SeaMoon"></span>
+<div class="language"><select id="gate-language" aria-label="语言" autocomplete="off">
 <option value="zh-CN" lang="zh-CN">中文</option><option value="en" lang="en">English</option><option value="ko" lang="ko">한국어</option><option value="ja" lang="ja">日本語</option>
-</select></header>
-<main><div class="entry"><div class="portrait" aria-hidden="true"></div><section class="panel" aria-labelledby="heading">
+</select></div></header>
+<main><div class="portrait" aria-hidden="true"></div><section class="panel" aria-labelledby="heading">
+<div class="jewel" aria-hidden="true"></div><div class="access">
 <h1 id="heading">海月目录</h1><p id="intro" class="intro">输入访问口令，查看作品目录。</p>
-<form id="gate-form"><label id="password-label" for="access-code">访问口令</label>
-<input id="access-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" required aria-describedby="status">
-<button type="submit" id="enter" disabled>进入目录</button><p id="status" role="status" aria-live="polite"></p></form>
+<form id="gate-form" novalidate><label id="password-label" for="access-code">访问口令</label>
+<div class="field"><span class="lock" aria-hidden="true"></span>
+<input id="access-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="请输入访问口令" required aria-describedby="status">
+<button type="button" class="reveal" id="reveal" aria-label="显示口令" aria-controls="access-code" aria-pressed="false"><span class="eye" aria-hidden="true"></span></button></div>
+<button type="submit" class="enter" id="enter" disabled><span id="enter-text">进入目录</span><span class="arrow" aria-hidden="true"></span></button>
+<p id="status" role="status" aria-live="polite"></p></form>
 <noscript>请开启 JavaScript 后访问目录。</noscript>
-</section></div></main>
+</div><div class="roses" aria-hidden="true"></div></section></main></div>
 <script>
 (() => {
   /* StatiCrypt v3.5.4
@@ -436,13 +565,22 @@ exports.init = init;
 
 return exports; })().init(engine);
   const copy = {
-    'zh-CN': ['海月目录','输入访问口令，查看作品目录。','访问口令','进入目录','正在打开…','口令不正确，请重新输入。','暂时无法加载目录，请重试。','请用支持安全连接的浏览器打开此页。','语言'],
-    en: ['SeaMoon Catalog','Enter the access code to browse the collection.','Access code','Open catalog','Opening…','That code is incorrect. Try again.','The catalog could not load. Please try again.','Open this page in a browser that supports secure connections.','Language'],
-    ko: ['해월 작품 목록','접속 암호를 입력하면 작품을 볼 수 있어요.','접속 암호','작품 목록 열기','여는 중…','암호가 올바르지 않아요. 다시 입력해 주세요.','목록을 불러올 수 없어요. 다시 시도해 주세요.','보안 연결을 지원하는 브라우저에서 열어 주세요.','언어'],
-    ja: ['海月の作品一覧','閲覧用パスワードを入力すると、作品一覧が開きます。','閲覧用パスワード','作品一覧を開く','読み込み中…','パスワードが違います。もう一度入力してください。','作品一覧を読み込めませんでした。もう一度お試しください。','安全な接続に対応するブラウザで開いてください。','言語']
+    'zh-CN': ['海月目录','输入访问口令，查看作品目录。','访问口令','进入目录','正在打开…',
+      '口令不正确，请重新输入。','暂时无法加载目录，请重试。','请用支持安全连接的浏览器打开此页。','语言',
+      '请输入访问口令','显示口令','隐藏口令'],
+    en: ['SeaMoon Catalog','Enter the access code to browse the collection.','Access code','Open catalog','Opening…',
+      'That code is incorrect. Try again.','The catalog could not load. Please try again.','Open this page in a browser that supports secure connections.','Language',
+      'Enter your access code','Show access code','Hide access code'],
+    ko: ['해월 작품 목록','접속 암호를 입력하면 작품을 볼 수 있어요.','접속 암호','작품 목록 열기','여는 중…',
+      '암호가 올바르지 않아요. 다시 입력해 주세요.','목록을 불러올 수 없어요. 다시 시도해 주세요.','보안 연결을 지원하는 브라우저에서 열어 주세요.','언어',
+      '접속 암호를 입력해 주세요','암호 표시','암호 숨기기'],
+    ja: ['海月の作品一覧','閲覧用パスワードを入力すると、作品一覧が開きます。','閲覧用パスワード','作品一覧を開く','読み込み中…',
+      'パスワードが違います。もう一度入力してください。','作品一覧を読み込めませんでした。もう一度お試しください。','安全な接続に対応するブラウザで開いてください。','言語',
+      'パスワードを入力してください','パスワードを表示','パスワードを隠す']
   };
   const find = id => document.getElementById(id);
   const menu = find('gate-language'), form = find('gate-form'), field = find('access-code'), button = find('enter');
+  const reveal = find('reveal');
   const preference = 'seamoon-catalog-language';
   let notice = 0, busy = false, packed;
   try { const saved = localStorage.getItem(preference); if (Object.hasOwn(copy, saved)) menu.value = saved; } catch {}
@@ -452,13 +590,26 @@ return exports; })().init(engine);
     document.title = words[0];
     menu.setAttribute('aria-label', words[8]);
     find('heading').textContent = words[0]; find('intro').textContent = words[1];
-    find('password-label').textContent = words[2]; button.textContent = words[busy ? 4 : 3];
+    find('password-label').textContent = words[2]; find('enter-text').textContent = words[busy ? 4 : 3];
+    field.placeholder = words[9];
+    const visible = field.type === 'text';
+    reveal.setAttribute('aria-pressed', String(visible));
+    reveal.setAttribute('aria-label', words[visible ? 11 : 10]);
     find('status').textContent = notice ? words[notice] : '';
     button.disabled = busy || !window.crypto?.subtle;
   }
   menu.addEventListener('change', () => {
     try { localStorage.setItem(preference, menu.value); } catch {}
     render();
+  });
+  reveal.addEventListener('click', () => {
+    field.type = field.type === 'password' ? 'text' : 'password';
+    render();
+  });
+  field.addEventListener('input', () => {
+    if (field.hasAttribute('aria-invalid')) {
+      field.removeAttribute('aria-invalid'); notice = 0; render();
+    }
   });
   if (!window.crypto?.subtle) notice = 7;
   render();
@@ -473,7 +624,11 @@ return exports; })().init(engine);
   }
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (busy || !field.value) return;
+    if (busy || !window.crypto?.subtle) return;
+    if (!field.value) {
+      notice = 9; field.setAttribute('aria-invalid', 'true'); render(); field.focus();
+      return;
+    }
     const password = field.value;
     busy = true; notice = 0; field.removeAttribute('aria-invalid'); render();
     try {
