@@ -200,7 +200,7 @@ html[lang="ja"] h1 { letter-spacing: .07em; text-indent: 0; }
       <form id="gate-form" aria-labelledby="password-label" novalidate>
         <label id="password-label" data-copy="code" for="access-code">访问口令</label>
         <div class="field"><span class="lock" aria-hidden="true"></span>
-          <input id="access-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="请输入访问口令" required aria-describedby="status">
+          <input id="access-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="go" placeholder="请输入访问口令" required aria-describedby="status">
           <button type="button" class="reveal" id="reveal" aria-label="显示口令" aria-controls="access-code" aria-pressed="false"><span class="eye" aria-hidden="true"></span></button>
         </div>
         <button type="submit" class="enter" id="enter" disabled><span id="enter-text">进入目录</span><span class="arrow" aria-hidden="true"></span></button>
@@ -604,10 +604,11 @@ function init(cryptoEngine) {
 exports.init = init;
 
 return exports; })().init(engine);
+  const envelope = {"salt":"01b95a5942e7c3817cc8e2035b5d7ea0","wrappedKey":"07b19e4e90a6f5f32386dbf67108a977e537ca9a4a9ec3ca70a547278d13daccac7b93674e607ac69ed06480800a6bc9a46bcfa6957cb6284e23951dfeb14ee136bc52db7033a76b35d10b3374aabab093fa5b303095423035e24e13fb9b9c4c","compact":"catalog-index-acb9e90b54ad7e778cc0.bin"};
   const copy = {
     'zh-CN': {
       title: '海月目录', subtitle: '输入访问口令，查看作品目录。', language: '语言',
-      code: '访问口令', placeholder: '请输入访问口令', show: '显示口令', hide: '隐藏口令', enter: '进入目录', opening: '正在打开…',
+      code: '访问口令', placeholder: '请输入访问口令', show: '显示口令', hide: '隐藏口令', enter: '进入目录', checking: '正在验证口令…', opening: '正在加载目录…',
       incorrect: '口令不正确，请重新输入。', unavailable: '暂时无法加载目录，请重试。', insecure: '请用支持安全连接的浏览器打开此页。',
       portrait: '黑色宽檐帽遮住双眼，银色缎面与指间的戒指在暗处映着微光。',
       privateTitle: '仅供私享 · 请勿外传', audience: '姐姐的作品仅限购买者本人观看，',
@@ -615,7 +616,7 @@ return exports; })().init(engine);
     },
     en: {
       title: 'SeaMoon Catalog', subtitle: 'Enter your access code to browse the catalog.', language: 'Language',
-      code: 'Access code', placeholder: 'Enter your access code', show: 'Show access code', hide: 'Hide access code', enter: 'Open catalog', opening: 'Opening…',
+      code: 'Access code', placeholder: 'Enter your access code', show: 'Show access code', hide: 'Hide access code', enter: 'Open catalog', checking: 'Checking code…', opening: 'Loading catalog…',
       incorrect: 'That code is incorrect. Try again.', unavailable: 'The catalog could not load. Please try again.', insecure: 'Open this page in a browser that supports secure connections.',
       portrait: 'A wide-brimmed black hat shades her eyes. Silver satin and her rings catch the light.',
       privateTitle: 'For private viewing only', audience: 'My work is for the purchaser’s personal viewing only.',
@@ -623,7 +624,7 @@ return exports; })().init(engine);
     },
     ko: {
       title: '해월 작품 목록', subtitle: '접속 암호를 입력해 작품 목록을 확인하세요.', language: '언어',
-      code: '접속 암호', placeholder: '접속 암호를 입력해 주세요', show: '암호 표시', hide: '암호 숨기기', enter: '작품 목록 열기', opening: '여는 중…',
+      code: '접속 암호', placeholder: '접속 암호를 입력해 주세요', show: '암호 표시', hide: '암호 숨기기', enter: '작품 목록 열기', checking: '암호 확인 중…', opening: '목록 불러오는 중…',
       incorrect: '암호가 올바르지 않아요. 다시 입력해 주세요.', unavailable: '목록을 불러올 수 없어요. 다시 시도해 주세요.', insecure: '보안 연결을 지원하는 브라우저에서 열어 주세요.',
       portrait: '챙이 넓은 검은 모자가 눈을 가리고, 은빛 새틴과 손가락의 반지에 빛이 감돈다.',
       privateTitle: '개인 감상 전용 · 공유 금지', audience: '작품은 구매자 본인만 감상해 주세요.',
@@ -631,7 +632,7 @@ return exports; })().init(engine);
     },
     ja: {
       title: '海月の作品一覧', subtitle: '閲覧用パスワードを入力して、作品一覧をご覧ください。', language: '言語',
-      code: '閲覧用パスワード', placeholder: '閲覧用パスワードを入力してください', show: 'パスワードを表示', hide: 'パスワードを隠す', enter: '作品一覧を開く', opening: '読み込み中…',
+      code: '閲覧用パスワード', placeholder: '閲覧用パスワードを入力してください', show: 'パスワードを表示', hide: 'パスワードを隠す', enter: '作品一覧を開く', checking: 'パスワードを確認中…', opening: '作品一覧を読み込み中…',
       incorrect: 'パスワードが違います。もう一度入力してください。', unavailable: '作品一覧を読み込めませんでした。もう一度お試しください。', insecure: '安全な接続に対応するブラウザで開いてください。',
       portrait: 'つばの広い黒い帽子が目元を隠し、銀色のサテンと指輪がほのかに光っている。',
       privateTitle: '個人鑑賞用・共有禁止', audience: '作品は購入者ご本人のみご覧いただけます。',
@@ -643,17 +644,27 @@ return exports; })().init(engine);
   const reveal = find('reveal');
   const shell = document.querySelector('.shell');
   const viewport = window.visualViewport || window;
+  let resizeTimer, fullHeight = 0, lastWidth = 0;
   function fitEntry() {
     if (viewport.scale && viewport.scale !== 1) return;
-    const height = viewport.height || window.innerHeight;
-    shell.style.setProperty('--visible-height', height + 'px');
-    shell.classList.toggle('compact', height < 480);
+    const height = Math.round(viewport.height || window.innerHeight);
+    const width = window.innerWidth;
+    if (width !== lastWidth || document.activeElement !== field) fullHeight = height;
+    lastWidth = width;
+    if (shell.style.getPropertyValue('--visible-height') !== height + 'px') {
+      shell.style.setProperty('--visible-height', height + 'px');
+    }
+    shell.classList.toggle('compact', height < 480 || fullHeight - height > 120);
+  }
+  function settleViewport() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitEntry, 100);
   }
   fitEntry();
-  viewport.addEventListener('resize', fitEntry);
+  viewport.addEventListener('resize', settleViewport);
   const preference = 'seamoon-catalog-language';
   const translated = document.querySelectorAll('[data-copy]');
-  let notice = '', busy = false, packed;
+  let notice = '', phase = '', pending;
   try { const saved = localStorage.getItem(preference); if (Object.hasOwn(copy, saved)) menu.value = saved; } catch {}
   function render() {
     const words = copy[menu.value];
@@ -661,14 +672,19 @@ return exports; })().init(engine);
     document.title = words.title;
     for (const element of translated) element.textContent = words[element.dataset.copy];
     menu.setAttribute('aria-label', words.language);
-    find('enter-text').textContent = busy ? words.opening : words.enter;
     field.placeholder = words.placeholder;
     const visible = field.type === 'text';
     reveal.setAttribute('aria-pressed', String(visible));
     reveal.setAttribute('aria-label', visible ? words.hide : words.show);
     find('gate-portrait').setAttribute('aria-label', words.portrait);
+    renderStatus();
+  }
+  function renderStatus() {
+    const words = copy[menu.value];
+    find('enter-text').textContent = words[phase || 'enter'];
     find('status').textContent = notice ? words[notice] : '';
-    button.disabled = busy || !window.crypto?.subtle;
+    button.disabled = !!phase || !window.crypto?.subtle;
+    form.setAttribute('aria-busy', String(!!phase));
   }
   menu.addEventListener('change', () => {
     try { localStorage.setItem(preference, menu.value); } catch {}
@@ -680,58 +696,93 @@ return exports; })().init(engine);
   });
   field.addEventListener('input', () => {
     if (field.hasAttribute('aria-invalid')) {
-      field.removeAttribute('aria-invalid'); notice = ''; render();
+      field.removeAttribute('aria-invalid'); notice = ''; renderStatus();
     }
   });
   if (!window.crypto?.subtle) notice = 'insecure';
   render();
-  const bytes = base64 => Uint8Array.from(atob(base64), ch => ch.charCodeAt(0));
+  function bytes(base64) {
+    const binary = atob(base64), result = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) result[i] = binary.charCodeAt(i);
+    return result;
+  }
+  const fetchOptions = {credentials:'omit', referrerPolicy:'no-referrer'};
   async function load() {
-    const response = await fetch('catalog-locked.bin?v=662097eeb9d8de2825f4', {credentials:'omit', referrerPolicy:'no-referrer'});
+    if (envelope.compact && typeof DecompressionStream === 'function' && typeof Blob.prototype.stream === 'function') {
+      const response = await fetch(envelope.compact, fetchOptions);
+      if (response.ok) {
+        const data = new Uint8Array(await response.arrayBuffer());
+        return {header:envelope, iv:data.subarray(0, 12), ciphertext:data.subarray(12), compressed:true};
+      }
+      if (response.status !== 404 && response.status !== 410) throw new Error('Unavailable');
+    }
+    const response = await fetch('catalog-locked.bin?v=49e60ddabf0ea43a15a2', fetchOptions);
     if (!response.ok) throw new Error('Unavailable');
     const data = new Uint8Array(await response.arrayBuffer());
     const boundary = data.subarray(0, 2048).indexOf(10);
     if (boundary < 0) throw new Error('Invalid catalog');
-    return {header:JSON.parse(new TextDecoder().decode(data.subarray(0, boundary))), ciphertext:data.subarray(boundary + 1)};
+    const header = JSON.parse(new TextDecoder().decode(data.subarray(0, boundary)));
+    return {header, iv:bytes(header.iv), ciphertext:data.subarray(boundary + 1)};
+  }
+  function prepare() {
+    if (!pending) {
+      const request = load();
+      pending = request;
+      request.catch(() => { if (pending === request) pending = null; });
+    }
+    return pending;
+  }
+  field.addEventListener('focus', () => { if (window.crypto?.subtle) prepare(); });
+  async function verify(password, header) {
+    return codec.decode(header.wrappedKey, await engine.hashPassword(password, header.salt), header.salt, 2);
   }
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (busy || !window.crypto?.subtle) return;
+    if (phase || !window.crypto?.subtle) return;
     if (!field.value) {
-      notice = 'placeholder'; field.setAttribute('aria-invalid', 'true'); render(); field.focus();
+      notice = 'placeholder'; field.setAttribute('aria-invalid', 'true'); renderStatus(); field.focus();
       return;
     }
     const password = field.value;
-    busy = true; notice = ''; field.removeAttribute('aria-invalid'); render();
+    phase = 'checking'; notice = ''; field.removeAttribute('aria-invalid'); renderStatus();
+    const prepared = prepare();
     try {
-      packed = packed || await load();
-      const {header, ciphertext} = packed;
-      const hash = await engine.hashPassword(password, header.salt);
-      const result = await codec.decode(header.wrappedKey, hash, header.salt, 2);
+      let result = await verify(password, envelope);
+      if (field.value !== password) return;
       if (!result.success) {
         notice = 'incorrect'; field.setAttribute('aria-invalid', 'true'); field.focus(); field.select();
         return;
       }
-      const key = await crypto.subtle.importKey('raw', bytes(result.decoded), 'AES-GCM', false, ['decrypt']);
-      const clear = await crypto.subtle.decrypt({name:'AES-GCM', iv:bytes(header.iv)}, key, ciphertext);
-      const catalog = JSON.parse(new TextDecoder().decode(clear));
-      const urls = new Map();
-      for (const [name, cover] of Object.entries(catalog.covers)) {
-        urls.set(name, URL.createObjectURL(new Blob([bytes(cover)], {type:'image/webp'})));
+      phase = 'opening'; renderStatus();
+      const {header, iv, ciphertext, compressed} = await prepared;
+      if (header.wrappedKey !== envelope.wrappedKey) {
+        result = await verify(password, header);
+        if (!result.success) throw new Error('Catalog release changed');
       }
-      const html = catalog.html.replace(/(href|src)="([foms]\d{3}-\d+-[0-9a-f]{8}\.webp)"/g, (_, attr, name) => {
-        if (!urls.has(name)) throw new Error('Missing cover');
-        return attr + '="' + urls.get(name) + '"';
-      });
+      const key = await crypto.subtle.importKey('raw', bytes(result.decoded), 'AES-GCM', false, ['decrypt']);
+      const clear = await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, ciphertext);
+      const catalog = compressed
+        ? await new Response(new Blob([clear]).stream().pipeThrough(new DecompressionStream('gzip'))).json()
+        : JSON.parse(new TextDecoder().decode(clear));
+      let html = catalog.html;
+      if (Object.keys(catalog.covers).length) {
+        const urls = new Map();
+        html = html.replace(/(href|src)="([foms]\d{3}-\d+-[0-9a-f]{8}\.webp)"/g, (_, attr, name) => {
+          if (!urls.has(name)) urls.set(name, URL.createObjectURL(new Blob([bytes(catalog.covers[name])], {type:'image/webp'})));
+          return attr + '="' + urls.get(name) + '"';
+        });
+      }
+      if (field.value !== password) return;
       const address = location.href;
-      field.value = ''; packed = null;
-      viewport.removeEventListener('resize', fitEntry);
+      field.value = ''; pending = null;
+      clearTimeout(resizeTimer);
+      viewport.removeEventListener('resize', settleViewport);
       document.open();
       if (location.href !== address) history.replaceState(null, '', address);
       document.write(html);
       document.close();
-    } catch { packed = null; notice = 'unavailable'; }
-    finally { if (form.isConnected) { busy = false; render(); } }
+    } catch { if (pending === prepared) pending = null; notice = 'unavailable'; }
+    finally { if (form.isConnected) { phase = ''; renderStatus(); } }
   });
 })();
 </script>
