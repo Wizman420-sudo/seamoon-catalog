@@ -604,7 +604,7 @@ function init(cryptoEngine) {
 exports.init = init;
 
 return exports; })().init(engine);
-  const envelope = {"salt":"0cb6c227acbf6bf5e7ebd320c5651b74","wrappedKey":"edb0a5a042a1f52a95e7625caf03587e3825b9eb539808733114d5dc83ef075da0ec9b696738de4199df61a892a55a3c726fb4b254286c436af82e88c694649cc502c42ef304ac4dc0eb09e6f40490652fd7433358981b682d37573b669c0632","compact":"catalog-index-fec5124e8acf115d9547.bin"};
+  const envelope = {"salt":"82aca12bce640d2ff19bb7aee370c0c1","wrappedKey":"5b5544bcffbea200bad4c043313f58cd5797dd36ce2401967313c30ebb49f38e656184d71200dc8e80668461b78e6440ceb92a053c22ca2c1b0de04ca671f6208cef83264509b4fa9ef75f874695e308ea3eff93ed575f90cbac1a12d0ab9a65","compact":"catalog-index-fa092ca10621d5fd0bcf.bin"};
   const copy = {
     'zh-CN': {
       title: '海月目录', subtitle: '输入访问口令，查看作品目录。', language: '语言',
@@ -716,7 +716,7 @@ return exports; })().init(engine);
       }
       if (response.status !== 404 && response.status !== 410) throw new Error('Unavailable');
     }
-    const response = await fetch('catalog-locked.bin?v=e8fc30b1f07538a25475', fetchOptions);
+    const response = await fetch('catalog-locked.bin?v=998ab7a4dbca112f580a', fetchOptions);
     if (!response.ok) throw new Error('Unavailable');
     const data = new Uint8Array(await response.arrayBuffer());
     const boundary = data.subarray(0, 2048).indexOf(10);
